@@ -2,7 +2,6 @@ package com.betrend.cp.thenotes.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -23,13 +22,18 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = YellowNote,
-    secondary = YellowNote0,
-    tertiary = YellowNote1,
-    background = YellowNote1,
-    onBackground = YellowNote5,
-    surface = YellowNote1,
-    onPrimary = YellowNote,
-    onSecondary = YellowNote
+    onPrimary = YellowNoteDD,
+    onPrimaryContainer = YellowNoteD,
+    secondary = YellowNoteD,
+    tertiary = YellowNoteL,
+    background = YellowNoteLL,
+    onBackground = YellowNoteD,
+    surface = YellowNoteLL,
+    surfaceVariant = YellowNoteDD,
+    onSurface = YellowNoteD,
+    onSurfaceVariant = YellowNoteLL,
+    onSecondary = YellowNoteL,
+    onErrorContainer = NoteError
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

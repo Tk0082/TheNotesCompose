@@ -1,117 +1,127 @@
 package com.betrend.cp.thenotes.screen
 
+
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.graphics.drawable.ShapeDrawable
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BrushPainter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.betrend.cp.thenotes.NoteActivity
-import com.betrend.cp.thenotes.R.*
-import com.betrend.cp.thenotes.entities.NotesList
-import com.betrend.cp.thenotes.entities.PinnedNotesList
-import com.betrend.cp.thenotes.model.NoteViewModel
-import com.betrend.cp.thenotes.ui.theme.YellowNote
-import com.betrend.cp.thenotes.ui.theme.YellowNote3
+import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
+import com.betrend.cp.thenotes.ui.theme.YellowNoteD
+import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
+import com.betrend.cp.thenotes.ui.theme.YellowNoteL
+import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
+import com.exyte.animatednavbar.AnimatedNavigationBar
+import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
+import com.exyte.animatednavbar.animation.indendshape.Height
+import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
+import com.exyte.animatednavbar.utils.noRippleClickable
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(viewModel: NoteViewModel = viewModel()){
-    val notes by viewModel.notes.collectAsState(initial = emptyList())
-    val pinnedNote by viewModel.pinnedNotes.collectAsState(initial = emptyList())
-    val context = LocalContext.current
+fun MainScreen(){
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    Intent(context, NoteActivity::class.java).also {
-                        context.startActivity(it)
-                    }
-                },
-                content = {
-                    Icon(
-                            Icons.Default.Add,
-                            contentDescription = "Criar Nota",
-                            tint = YellowNote3
+    // BottomBar
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    val navigationBarItems = remember { NavigationBarItems.entries.toTypedArray() }
+    var currentScreen by remember { mutableStateOf(NavigationBarItems.Note) }
+
+    TheNotesTheme {
+        Scaffold(
+            bottomBar = {
+                AnimatedNavigationBar(
+                    selectedIndex = selectedIndex,
+                    modifier = Modifier.height(50.dp).background(YellowNoteLL),
+                    cornerRadius = shapeCornerRadius(34.dp),
+                    ballAnimation = Parabolic(tween(200)),
+                    indentAnimation = Height(tween(180)),
+                    barColor = YellowNoteD,
+                    ballColor = YellowNoteD
+                ) {
+                    navigationBarItems.forEach { item ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .noRippleClickable {
+                                    selectedIndex = item.ordinal
+                                    currentScreen = NavigationBarItems.entries.toTypedArray()[selectedIndex]
+                                },
+                            contentAlignment = Alignment.Center,
+                            content = {
+                                Icon(
+                                    modifier = Modifier.size(26.dp),
+                                    imageVector = item.icon,
+                                    contentDescription = item.description,
+                                    tint = if (selectedIndex == item.ordinal) {
+                                        YellowNoteL
+
+                                    } else {
+                                        YellowNoteDD
+                                    }
+                                )
+                            }
                         )
+                    }
                 }
-            )
-        }
-    ) {
-        Column (
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Text(
-                text = "MainScreen",
-                textAlign = TextAlign.Center,
-                fontSize = 40.sp,
-                color = Color(0xFF505050)
-            )
-            // Lista de Notas Pinadas
-            PinnedNotesList(
-                pinnedNote,
-                viewModel::onPinnedClick,
-                viewModel::onSaveClick,
-                viewModel::onDeletClick,
-                viewModel::onSharedClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFbbffbb))
-                    .height(height = 80.dp)
-            )
-
-            // Lista de Notas Totais
-            NotesList(
-                notes,
-                viewModel::onPinnedClick,
-                viewModel::onSaveClick,
-                viewModel::onDeletClick,
-                viewModel::onSharedClick
-            )
+            }
+        ){innerPadding ->
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)) {
+                // Seleção das Screens associada ao BottomnavigationBar Click
+                when (currentScreen) {
+                    NavigationBarItems.Note -> NotesListScreen()
+                    //NavigationBarItems.Save -> NotesTakerScreen()
+                    NavigationBarItems.Info -> NotesInfoScreen()
+                }
+            }
         }
     }
 
+
 }
 
-@Preview(name = "Main")
+@Preview(name = "Main", showSystemUi = true)
 @Composable
 fun MainPreview(){
     MainScreen()
+}
+
+enum class NavigationBarItems(val icon: ImageVector, val description: String) {
+    Note(icon = Icons.Default.AddCircle, description = "Add Nota"),
+   // Save(icon = Icons.Default.CheckCircle, description = "Salvar Nota"),
+    Info(icon = Icons.Default.Info, description = "Sobre o App")
+}
+
+
+@Composable
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed{
+    Modifier.clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
+        onClick()
+    }
 }

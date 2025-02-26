@@ -14,7 +14,7 @@
         android:theme="@style/Theme.TheNotesApp"
         tools:targetApi="31" >
         <activity
-            android:name=".NoteActivity"
+            android:name=".NotesTakerActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.TheNotesApp"
             android:exported="false" />
