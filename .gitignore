@@ -1,5 +1,11 @@
 *.iml
+*.log
 .gradle
+.idea/
+.idea/easycode/
+.kotlin
+/.idea/
+/.kotlin/
 /local.properties
 /.idea/caches
 /.idea/libraries

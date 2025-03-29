@@ -2,7 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id ("kotlin-kapt")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -32,32 +33,40 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        //kotlinCompilerExtensionVersion = libs.versions.kotlin.get()
+//        @Suppress("DEPRECATION")
+//        kotlinCompilerVersion  = "1.8.0"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    buildToolsVersion = "35.0.0"
+    //buildToolsVersion = "35.0.0"
     dependenciesInfo {
         includeInApk = true
         includeInBundle = true
     }
+    
+}
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("ksp.incremental", "false")
 }
 
 dependencies {
 
+    implementation(libs.kotlinLib)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -70,6 +79,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -80,20 +90,29 @@ dependencies {
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.room.runtime)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
 
     // RoomDB
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+
+    implementation("androidx.compose.compiler:compiler:1.5.15")
 
     // Animated BottomNavigationBar
-    implementation("com.exyte:animated-navigation-bar:1.0.0")
+    implementation(libs.animated.navigation.bar)
 
     // Material3
     implementation ("androidx.compose.material3:material3:1.3.1")
     implementation ("androidx.compose.material:material:1.7.8")
 
-    implementation ("androidx.datastore:datastore-preferences:1.1.2")
-
+    implementation (libs.androidx.lifecycle.runtime.compose)
+    implementation (libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.compose)
+}
+//Permitir referências ao código gerado
+kapt {
+    correctErrorTypes = true
+    useBuildCache = true
 }

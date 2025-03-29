@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.betrend.cp.thenotes.entities.Note
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotesDao {
@@ -12,19 +14,31 @@ interface NotesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: Note)
 
+    /* Atualizar notas já criadas */
+    @Update //@Query("UPDATE notesdb SET name = :name, content = :content WHERE ID = :id")
+    suspend fun update(note: Note)
+
     /* Pegar todas as Notas não Pinadas*/
-    @Query("SELECT * FROM Note WHERE isPinned == 0")
-    fun getAll(): List<Note>
+    @Query("SELECT * FROM notesdb WHERE isPinned == 0 ORDER BY id ASC")
+    fun getAll(): Flow<List<Note>>
+
+    @Query("SELECT * FROM notesdb WHERE id = :id")
+    suspend fun getNoteById(id: Int): Note?
 
     /* Deletar Notas */
-    @Query("DELETE FROM Note WHERE id = :id")
+    @Query("DELETE FROM notesdb WHERE id = :id")
     suspend fun deleteNote(id: Int)
 
     /* Fixar Notas */
-    @Query("UPDATE Note SET isPinned = :pin WHERE ID = :id")
-    fun pin(id: Int, pin: Boolean)
+    @Query("UPDATE notesdb SET isPinned = :pin WHERE ID = :id")
+    suspend fun pin(id: Int, pin: Boolean)
 
     /* Pesquisa de NOTAS Pinadas */
-    @Query("SELECT * FROM note WHERE isPinned == 1")
-    fun getPinned(): List<Note>
+    @Query("SELECT * FROM notesdb WHERE isPinned == 1")
+    fun getPinned(): Flow<List<Note>>
+
+    /* Pesquisar notas */
+    @Query("SELECT * FROM notesdb WHERE name LIKE '%' || :query || '%'")
+    fun searchNotes(query: String): Flow<List<Note>>
+
 }

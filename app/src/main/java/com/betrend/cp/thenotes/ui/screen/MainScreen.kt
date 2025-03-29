@@ -1,7 +1,8 @@
-package com.betrend.cp.thenotes.screen
-
+package com.betrend.cp.thenotes.ui.screen
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,8 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -42,8 +43,7 @@ import com.exyte.animatednavbar.utils.noRippleClickable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(){
-
-    // BottomBar
+    // Propriedades da BottomBar
     var selectedIndex by remember { mutableIntStateOf(0) }
     val navigationBarItems = remember { NavigationBarItems.entries.toTypedArray() }
     var currentScreen by remember { mutableStateOf(NavigationBarItems.Note) }
@@ -53,7 +53,9 @@ fun MainScreen(){
             bottomBar = {
                 AnimatedNavigationBar(
                     selectedIndex = selectedIndex,
-                    modifier = Modifier.height(50.dp).background(YellowNoteLL),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .background(YellowNoteLL),
                     cornerRadius = shapeCornerRadius(34.dp),
                     ballAnimation = Parabolic(tween(200)),
                     indentAnimation = Height(tween(180)),
@@ -66,7 +68,8 @@ fun MainScreen(){
                                 .fillMaxSize()
                                 .noRippleClickable {
                                     selectedIndex = item.ordinal
-                                    currentScreen = NavigationBarItems.entries.toTypedArray()[selectedIndex]
+                                    currentScreen =
+                                        NavigationBarItems.entries.toTypedArray()[selectedIndex]
                                 },
                             contentAlignment = Alignment.Center,
                             content = {
@@ -76,7 +79,6 @@ fun MainScreen(){
                                     contentDescription = item.description,
                                     tint = if (selectedIndex == item.ordinal) {
                                         YellowNoteL
-
                                     } else {
                                         YellowNoteDD
                                     }
@@ -92,29 +94,29 @@ fun MainScreen(){
                 .padding(innerPadding)) {
                 // Seleção das Screens associada ao BottomnavigationBar Click
                 when (currentScreen) {
-                    NavigationBarItems.Note -> NotesListScreen()
-                    //NavigationBarItems.Save -> NotesTakerScreen()
-                    NavigationBarItems.Info -> NotesInfoScreen()
+                    NavigationBarItems.Note -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        NotesListScreen()
+                    }
+                    NavigationBarItems.Info -> NotesMailScreen()
                 }
             }
         }
     }
-
-
 }
 
-@Preview(name = "Main", showSystemUi = true)
+@Preview(name = "Main")
 @Composable
 fun MainPreview(){
-    MainScreen()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        MainScreen()
+    }
 }
 
+// Items de navegação e Screens associadas
 enum class NavigationBarItems(val icon: ImageVector, val description: String) {
-    Note(icon = Icons.Default.AddCircle, description = "Add Nota"),
-   // Save(icon = Icons.Default.CheckCircle, description = "Salvar Nota"),
-    Info(icon = Icons.Default.Info, description = "Sobre o App")
+    Note(icon = Icons.Default.Home, description = "Add Nota"),
+    Info(icon = Icons.Default.Person, description = "Sobre o App")
 }
-
 
 @Composable
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed{

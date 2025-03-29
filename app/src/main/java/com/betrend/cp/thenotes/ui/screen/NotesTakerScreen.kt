@@ -1,9 +1,11 @@
-@file:Suppress("UNUSED_VARIABLE")
+package com.betrend.cp.thenotes.ui.screen
 
-package com.betrend.cp.thenotes.screen
-
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
+import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,30 +22,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomSheetScaffold
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomSheetValue
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.IconButton
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberBottomSheetScaffoldState
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberBottomSheetState
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,52 +45,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.betrend.cp.thenotes.MainActivity
 import com.betrend.cp.thenotes.R
-import com.betrend.cp.thenotes.model.NoteViewModel
-import com.betrend.cp.thenotes.ui.theme.BackTxtD
-import com.betrend.cp.thenotes.ui.theme.ButtonD
-import com.betrend.cp.thenotes.ui.theme.ButtonL
+import com.betrend.cp.thenotes.database.NotesDatabase
+import com.betrend.cp.thenotes.di.repositories.NotesRepository
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.GraffitLL
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
-import com.betrend.cp.thenotes.ui.theme.White
 import com.betrend.cp.thenotes.ui.theme.YellowNote
-import com.betrend.cp.thenotes.ui.theme.YellowNote4
 import com.betrend.cp.thenotes.ui.theme.YellowNoteD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
+import com.betrend.cp.thenotes.ui.viewmodels.NotesTakerViewModel
+import com.betrend.cp.thenotes.ui.viewmodels.factory.NotesTakerViewModelFactory
 import com.betrend.cp.thenotes.utils.FontSizeBottomSheet
 import com.betrend.cp.thenotes.utils.FontSizeManager
+import com.betrend.cp.thenotes.utils.brushBackNote
+import com.betrend.cp.thenotes.utils.brushBorderButton
+import com.betrend.cp.thenotes.utils.getDate
+import com.betrend.cp.thenotes.utils.showMessage
 import kotlinx.coroutines.launch
-import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
-fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
-    val notes by viewModel.notes.collectAsState(initial = emptyList())
-    val pinnedNote by viewModel.pinnedNotes.collectAsState(initial = emptyList())
-
+fun NotesTakerScreen() {
     val context = LocalContext.current
+    val notesRepository = NotesRepository(NotesDatabase.getNotes(context).notesDao())
+    val viewModel: NotesTakerViewModel = viewModel(factory = NotesTakerViewModelFactory(notesRepository))
+
+    // Recuperando o ID da nota passado via Intent
+    val noteId = (context as? Activity)?.intent?.getIntExtra("noteId", -1) ?: -1
+    if (noteId != -1) {
+        viewModel.loadNote(noteId) // Carrega a nota para edição
+    }
+
+    val uiState by viewModel.uiState.collectAsState() // Usando collectAsState para observar o estado
+
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
-
-    val backTxshape = listOf(White, BackTxtD)
-    val brushtx = Brush.verticalGradient(backTxshape)
-
-    val backNote = listOf(White, YellowNote4)
-    val brushnote = Brush.verticalGradient(backNote)
-
-    val backBtn = listOf(ButtonL, ButtonD)
-    val backbtn = Brush.verticalGradient(backBtn)
-
-    var name by remember { mutableStateOf(TextFieldValue("")) }
-    var note by remember { mutableStateOf(TextFieldValue("")) }
 
     val fontSizeManager = remember { FontSizeManager() }
     val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -124,7 +115,7 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                     .fillMaxSize()
                     .background(YellowNoteLL)
                     .padding(padding)
-                    .padding(horizontal = 6.dp, vertical = 8.dp)
+                    .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 3.dp)
             ) {
                 Column(
                     modifier = Modifier.background(YellowNoteLL),
@@ -135,13 +126,13 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                         modifier = Modifier
                             .weight(1f, true)
                             .shadow(3.dp, RoundedCornerShape(8.dp))
-                            .background(brushnote, RoundedCornerShape(8.dp))
+                            .background(brushBackNote(), RoundedCornerShape(8.dp))
                     ) {
                         BasicTextField(
-                            value = name,
-                            onValueChange = { name = it },
+                            value = uiState.name,
+                            onValueChange = viewModel::onNameChange,
                             modifier = Modifier
-                                .height(50.dp)
+                                .height(40.dp)
                                 .padding(5.dp)
                                 .fillMaxWidth(),
                             singleLine = true,
@@ -157,7 +148,7 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                                     modifier = Modifier.fillMaxSize(),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    if (name.text.isEmpty()) {
+                                    if (uiState.name.isEmpty()) {
                                         Text(
                                             text = "Título",
                                             color = GraffitLL,
@@ -184,8 +175,8 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                                 .background(YellowNoteD)
                         )
                         BasicTextField(
-                            value = note,
-                            onValueChange = { note = it },
+                            value = uiState.content,
+                            onValueChange = viewModel::onContentChange,
                             modifier = Modifier
                                 .padding(horizontal = 5.dp, vertical = 10.dp)
                                 .fillMaxSize(),
@@ -196,7 +187,7 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                             cursorBrush = SolidColor(YellowNote),
                             decorationBox = { innerTextField ->
                                 Box {
-                                    if (note.text.isEmpty()) {
+                                    if (uiState.content.isEmpty()) {
                                         Text(
                                             text = "Digite sua nota..",
                                             color = GraffitLL,
@@ -219,6 +210,7 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(
                             onClick = {
@@ -227,24 +219,23 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                                 }
                             },
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
+                                .height(50.dp)
+                                .width(50.dp)
                                 .shadow(1.dp, RoundedCornerShape(60.dp))
                                 .background(YellowNote, RoundedCornerShape(50.dp))
-                                .border(.5.dp, brushnote, RoundedCornerShape(50.dp)),
+                                .border(.5.dp, brushBorderButton(), RoundedCornerShape(50.dp)),
                             content = {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-
                                     Image(
-                                        painter = painterResource(id = R.mipmap.thenotes),
+                                        painter = painterResource(id = R.drawable.font_ajust),
                                         contentDescription = null,
                                         modifier = Modifier
                                             .width(40.dp)
                                             .height(40.dp)
-                                            .padding(top = 4.dp, bottom = 6.dp)
+                                            .padding(top = 5.dp)
                                     )
                                 }
                             }
@@ -252,13 +243,20 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                         Spacer(modifier = Modifier.padding(10.dp))
                         IconButton(
                             onClick = {
+                                val date = getDate()
+                                showMessage(context, "Title: ${uiState.name}\ncontent: ${uiState.content} - ${date}")
+                                viewModel.saveNote()
+                                Intent(context, MainActivity::class.java).also {
+                                    it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                    context.startActivity(it)
+                                }
                             },
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(150.dp)
+                                .height(40.dp)
+                                .width(160.dp)
                                 .shadow(1.dp, RoundedCornerShape(60.dp))
                                 .background(YellowNote, RoundedCornerShape(50.dp))
-                                .border(.5.dp, brushnote, RoundedCornerShape(50.dp)),
+                                .border(.5.dp, brushBorderButton(), RoundedCornerShape(50.dp)),
                             content = {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
@@ -278,7 +276,7 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                                         modifier = Modifier
                                             .width(40.dp)
                                             .height(40.dp)
-                                            .padding(top = 4.dp, bottom = 6.dp)
+                                            .padding(bottom = 4.dp)
                                     )
                                 }
                             }
@@ -286,10 +284,21 @@ fun NotesTakerScreen(viewModel: NoteViewModel = viewModel()) {
                     }
                 }
             }
+            // Efeito de fechar o BottomSheet ao voltar, ou finalizar Activity se estiver fechado
+            BackHandler {
+                if (bottomSheetState.isExpanded) {
+                    scope.launch {
+                        bottomSheetState.collapse()
+                    }
+                } else {
+                    (context as? Activity)?.finish()
+                }
+            }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(name = "NoteAct")
 @Composable
 fun NotePreview(){
@@ -298,14 +307,14 @@ fun NotePreview(){
 
 
 // Captalizar texto de nota
-fun capitalizarTexto(text: String): String {
-    if (text.isEmpty()) return text
-
-    val words = text.split(". ")
-    val capitalizeWords = words.map { sentence ->
-        sentence.split(" ").mapIndexed { index, word ->
-            if (index == 0 || sentence.equals(index-1)) word.capitalize(Locale.getDefault()) else word
-        }.joinToString(" ")
-    }
-    return capitalizeWords.joinToString(". ")
-}
+//fun capitalizarTexto(text: String): String {
+//    if (text.isEmpty()) return text
+//
+//    val words = text.split(". ")
+//    val capitalizeWords = words.map { sentence ->
+//        sentence.split(" ").mapIndexed { index, word ->
+//            if (index == 0 || sentence.equals(index-1)) word.capitalize(Locale.getDefault())  else word
+//        }.joinToString(" ")
+//    }
+//    return capitalizeWords.joinToString(". ")
+//}

@@ -12,13 +12,14 @@
     <color name="color3">#8BFF90</color>
     <color name="color4">#E91E63</color>
     <color name="color7">#D0CB57</color>
-    <color name="note">#FFEB3B</color>
+    <color name="note">#FFF591</color>
     <color name="note0">#FFF166</color>
     <color name="note1">#FFF59D</color>
     <color name="note2">#FFFFFC</color>
     <color name="note3">#8F8849</color>
     <color name="note4">#FFFEF4</color>
     <color name="note5">#D9D55B</color>
+    <color name="note6">#FFF061</color>
     <color name="graffit">#FF404040</color>
     <color name="graffitl">#808080</color>
     <color name="graffitd">#FF303030</color>
