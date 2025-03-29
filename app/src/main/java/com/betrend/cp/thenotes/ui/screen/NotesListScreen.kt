@@ -5,12 +5,14 @@ import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +23,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -45,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -63,17 +73,21 @@ import com.betrend.cp.thenotes.entities.NoteItem
 import com.betrend.cp.thenotes.entities.NoteItemPin
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitL
+import com.betrend.cp.thenotes.ui.theme.GreenNote
 import com.betrend.cp.thenotes.ui.theme.NoteError
+import com.betrend.cp.thenotes.ui.theme.NoteItemError
 import com.betrend.cp.thenotes.ui.theme.YellowNote
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
+import com.betrend.cp.thenotes.ui.theme.YellowNoteL
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.ui.viewmodels.NotesListViewModel
 import com.betrend.cp.thenotes.utils.brushBackNote
 import com.betrend.cp.thenotes.utils.brushBorderButton
 import com.betrend.cp.thenotes.utils.brushBorderNote
+import com.betrend.cp.thenotes.utils.shareText
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NotesListScreen() {
@@ -254,21 +268,67 @@ fun NotesListScreen() {
                             .padding(horizontal = 5.dp)
                             .weight(1f, true)
                     ) {
-                        items(notes) { note ->
-                            NoteItem(
-                                note = note,
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                onClick = {
-                                    // Evento de clicar na nota para editar
-                                    viewModel.updateNote(note)
-                                    Intent(context, NotesTakerActivity::class.java).also {
-                                        it.putExtra("noteId", note.id)
-                                        context.startActivity(it)
+                        items(notes, key = { it.id }) { note ->
+                            val dismissState = rememberDismissState(
+                                // Ações de Deletar e Compartilhar no Swipe
+                                confirmStateChange = {
+                                    when (it) {
+                                        DismissValue.DismissedToStart -> {
+                                            viewModel.removeNote(note)
+                                            true
+                                        }
+                                        DismissValue.DismissedToEnd -> {
+                                            shareText(context, note.name, note.content)
+                                            false // Mantém a nota na lista após compartilhar
+                                        }
+                                        else -> false
+                                    }
+                                }
+                            )
+                            SwipeToDismiss(
+                                state = dismissState,
+                                directions = setOf(DismissDirection.EndToStart, DismissDirection.StartToEnd),
+                                background = {
+                                    val color by animateColorAsState(
+                                        when(dismissState.targetValue){
+                                            DismissValue.DismissedToStart ->NoteError
+                                            DismissValue.DismissedToEnd -> YellowNoteL
+                                            else -> YellowNoteLL
+                                        },
+                                        label = ""
+                                    )
+                                    val icon = when (dismissState.dismissDirection) {
+                                        DismissDirection.EndToStart -> Icons.Default.Delete
+                                        DismissDirection.StartToEnd -> Icons.Default.Share
+                                        else -> null
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(color, RoundedCornerShape(15.dp))
+                                            .padding(horizontal = 20.dp),
+                                        contentAlignment = if (dismissState.dismissDirection == DismissDirection.EndToStart) Alignment.CenterEnd else Alignment.CenterStart
+                                    ) {
+                                        icon?.let {
+                                            Icon(it, contentDescription = null, tint = if (dismissState.dismissDirection == DismissDirection.EndToStart) NoteItemError else YellowNoteDD)
+                                        }
                                     }
                                 },
-                                onLongClick = {
-                                    viewModel.pinNote(note)
+                                dismissContent = {
+                                    NoteItem(
+                                        note = note,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = {
+                                            viewModel.updateNote(note)
+                                            Intent(context, NotesTakerActivity::class.java).also {
+                                                it.putExtra("noteId", note.id)
+                                                context.startActivity(it)
+                                            }
+                                        },
+                                        onLongClick = {
+                                            viewModel.pinNote(note)
+                                        }
+                                    )
                                 }
                             )
                         }

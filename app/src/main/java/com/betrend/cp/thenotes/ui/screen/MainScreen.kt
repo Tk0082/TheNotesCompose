@@ -1,8 +1,9 @@
 package com.betrend.cp.thenotes.ui.screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
@@ -43,13 +45,25 @@ import com.exyte.animatednavbar.utils.noRippleClickable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(){
+    val context = LocalContext.current
     // Propriedades da BottomBar
     var selectedIndex by remember { mutableIntStateOf(0) }
     val navigationBarItems = remember { NavigationBarItems.entries.toTypedArray() }
     var currentScreen by remember { mutableStateOf(NavigationBarItems.Note) }
 
+    // Finalizar App ou voltar para Home
+    BackHandler {
+        if (currentScreen == NavigationBarItems.Note){
+            (context as? Activity)?.finish()
+        } else {
+            currentScreen = NavigationBarItems.Note
+            selectedIndex = currentScreen.ordinal
+        }
+    }
+
     TheNotesTheme {
         Scaffold(
+            modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 AnimatedNavigationBar(
                     selectedIndex = selectedIndex,
@@ -102,6 +116,7 @@ fun MainScreen(){
             }
         }
     }
+
 }
 
 @Preview(name = "Main")
