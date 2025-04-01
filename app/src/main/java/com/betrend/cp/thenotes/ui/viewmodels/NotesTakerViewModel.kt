@@ -19,8 +19,8 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
     private val _uiState= MutableStateFlow(NotesTakerUiState())
     val uiState = _uiState.asStateFlow()
 
-    val time = getDate()
-    private val pin = false
+    private val time = getDate()
+    private var currentNoteId: Int? = null
 
     fun onNameChange(name: String) {
         _uiState.update { it.copy(name = name) }
@@ -32,6 +32,7 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
 
     fun loadNote(id: Int) {
         viewModelScope.launch {
+            currentNoteId = id
             val note = repository.getNoteById(id)
             note?.let {
                 _uiState.update { currentState ->
@@ -51,13 +52,30 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
     fun saveNote() {
         viewModelScope.launch {
             val currentState = uiState.value
-            val note = Note(
-                name = currentState.name,
-                content = currentState.content,
-                time = time.toString(),
-                isPinned = currentState.isPinned
-            )
-            repository.save(note)
+            val note = if (currentNoteId != null) {
+                // Se tiver um ID, editar nota existente
+                Note(
+                    id = currentNoteId!!,
+                    name = currentState.name,
+                    content = currentState.content,
+                    time = time.toString(),
+                    isPinned = currentState.isPinned
+                )
+            } else {
+                // Senão, criar uma nova nota
+                Note(
+                    name = currentState.name,
+                    content = currentState.content,
+                    time = time.toString(),
+                    isPinned = currentState.isPinned
+                )
+            }
+
+            if (currentNoteId != null) {
+                repository.update(note)
+            } else {
+                repository.save(note)
+            }
         }
     }
 }

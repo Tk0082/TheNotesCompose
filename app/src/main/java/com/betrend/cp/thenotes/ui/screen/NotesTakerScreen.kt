@@ -88,7 +88,7 @@ fun NotesTakerScreen() {
     val uiState by viewModel.uiState.collectAsState() // Usando collectAsState para observar o estado
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
+    rememberScaffoldState()
 
     val fontSizeManager = remember { FontSizeManager() }
     val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -244,7 +244,7 @@ fun NotesTakerScreen() {
                         IconButton(
                             onClick = {
                                 val date = getDate()
-                                showMessage(context, "Title: ${uiState.name}\ncontent: ${uiState.content} - ${date}")
+                                showMessage(context, "Title: ${uiState.name}\ncontent: ${uiState.content} - $date")
                                 viewModel.saveNote()
                                 Intent(context, MainActivity::class.java).also {
                                     it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

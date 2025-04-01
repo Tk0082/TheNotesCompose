@@ -70,7 +70,7 @@ fun MainScreen(){
                     modifier = Modifier
                         .height(50.dp)
                         .background(YellowNoteLL),
-                    cornerRadius = shapeCornerRadius(34.dp),
+                    cornerRadius = shapeCornerRadius(topRight = 34.dp, topLeft = 34.dp, bottomRight = 0.dp, bottomLeft = 0.dp),
                     ballAnimation = Parabolic(tween(200)),
                     indentAnimation = Height(tween(180)),
                     barColor = YellowNoteD,

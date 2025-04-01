@@ -54,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -66,14 +65,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.betrend.cp.thenotes.NotesTakerActivity
-import com.betrend.cp.thenotes.R
+import com.betrend.cp.thenotes.R.mipmap
+import com.betrend.cp.thenotes.R.string
 import com.betrend.cp.thenotes.database.NotesDatabase
 import com.betrend.cp.thenotes.di.repositories.NotesRepository
 import com.betrend.cp.thenotes.entities.NoteItem
 import com.betrend.cp.thenotes.entities.NoteItemPin
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitL
-import com.betrend.cp.thenotes.ui.theme.GreenNote
 import com.betrend.cp.thenotes.ui.theme.NoteError
 import com.betrend.cp.thenotes.ui.theme.NoteItemError
 import com.betrend.cp.thenotes.ui.theme.YellowNote
@@ -81,10 +80,12 @@ import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteL
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.ui.viewmodels.NotesListViewModel
+import com.betrend.cp.thenotes.utils.ConfirmDeleteDialog
 import com.betrend.cp.thenotes.utils.brushBackNote
 import com.betrend.cp.thenotes.utils.brushBorderButton
 import com.betrend.cp.thenotes.utils.brushBorderNote
 import com.betrend.cp.thenotes.utils.shareText
+import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -105,6 +106,12 @@ fun NotesListScreen() {
     // Observe as notas normais e pinadas
     val notes by viewModel.notes.collectAsState()
     val notesPin by viewModel.pinnedNotes.collectAsState()
+
+    // Estado do Dialog de remoção de notas
+    val showDialogId = remember { mutableStateOf<String?>(null) }
+
+    // Configurando a expansão do item
+    val focusedNoteId = remember { mutableStateOf<String?>(null) }
 
     // Pesquisa
     val txSearch = remember { mutableStateOf("") }
@@ -168,13 +175,13 @@ fun NotesListScreen() {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Image(
-                        painter = painterResource(id = R.mipmap.thenotes),
+                        painter = painterResource(id = mipmap.thenotes),
                         contentDescription = null,
                         modifier = Modifier
                             .width(34.dp)
                     )
                     Text(
-                        text = stringResource(id = R.string.app_name),
+                        text = stringResource(id = string.app_name),
                         color = Graffit,
                         style = TextStyle(
                             fontSize = 20.sp,
@@ -245,21 +252,57 @@ fun NotesListScreen() {
                             .padding(5.dp)
                     ) {
                         items(notesPin) { note ->
+                            val isExpanded = focusedNoteId.value == note.id.toString()
+
+                            // Fechar botões depois de 3s
+                            LaunchedEffect(isExpanded) {
+                                if(isExpanded){
+                                    delay(3000)
+                                    focusedNoteId.value = null
+                                }
+                            }
+
                             NoteItemPin(
                                 note = note,
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
                                     // Evento de clicar na nota para editar
-                                    viewModel.updateNote(note)
+//                                    viewModel.updateNote(note)
                                     Intent(context, NotesTakerActivity::class.java).also {
                                         it.putExtra("noteId", note.id)
                                         context.startActivity(it)
                                     }
                                 },
                                 onLongClick = {
+                                    // Expande ou contrai a nota clicada
+                                    focusedNoteId.value = if (focusedNoteId.value == note.id.toString()) null else note.id.toString()
+                                },
+                                onDeleteClick = {
+                                    // Chamar o Dialog de Remoção
+                                    showDialogId.value = note.id.toString()
+                                    focusedNoteId.value = null
+                                },
+                                onUnpinClick = {
                                     viewModel.pinNote(note)
-                                }
+                                    focusedNoteId.value = null
+                                },
+                                onShareClick = {
+                                    shareText(context, note.name, note.content)
+                                    focusedNoteId.value = null
+                                },
+                                expanded = isExpanded
                             )
+                            // Chama o Dialog
+                            if (showDialogId.value == note.id.toString()) {
+                                ConfirmDeleteDialog(
+                                    note = note,
+                                    onDismiss = { showDialogId.value = null },
+                                    onConfirm = {
+                                        viewModel.removeNote(note)
+                                        showDialogId.value = null
+                                    }
+                                )
+                            }
                         }
                     }
                     // Lista de Notas gerais
@@ -274,8 +317,8 @@ fun NotesListScreen() {
                                 confirmStateChange = {
                                     when (it) {
                                         DismissValue.DismissedToStart -> {
-                                            viewModel.removeNote(note)
-                                            true
+                                            showDialogId.value = note.id.toString()
+                                            false
                                         }
                                         DismissValue.DismissedToEnd -> {
                                             shareText(context, note.name, note.content)
@@ -310,7 +353,12 @@ fun NotesListScreen() {
                                         contentAlignment = if (dismissState.dismissDirection == DismissDirection.EndToStart) Alignment.CenterEnd else Alignment.CenterStart
                                     ) {
                                         icon?.let {
-                                            Icon(it, contentDescription = null, tint = if (dismissState.dismissDirection == DismissDirection.EndToStart) NoteItemError else YellowNoteDD)
+                                            Icon(
+                                                it,
+                                                contentDescription = null,
+                                                tint = if (dismissState.dismissDirection == DismissDirection.EndToStart)
+                                                    NoteItemError else YellowNoteDD
+                                            )
                                         }
                                     }
                                 },
@@ -319,7 +367,7 @@ fun NotesListScreen() {
                                         note = note,
                                         modifier = Modifier.fillMaxWidth(),
                                         onClick = {
-                                            viewModel.updateNote(note)
+//                                            viewModel.updateNote(note)
                                             Intent(context, NotesTakerActivity::class.java).also {
                                                 it.putExtra("noteId", note.id)
                                                 context.startActivity(it)
@@ -329,6 +377,17 @@ fun NotesListScreen() {
                                             viewModel.pinNote(note)
                                         }
                                     )
+                                    // Chama a função ConfirmAlertDialog passando o ID da nota
+                                    if (showDialogId.value == note.id.toString()) {
+                                        ConfirmDeleteDialog(
+                                            note = note,
+                                            onDismiss = { showDialogId.value = null },
+                                            onConfirm = {
+                                                viewModel.removeNote(note)
+                                                showDialogId.value = null
+                                            }
+                                        )
+                                    }
                                 }
                             )
                         }

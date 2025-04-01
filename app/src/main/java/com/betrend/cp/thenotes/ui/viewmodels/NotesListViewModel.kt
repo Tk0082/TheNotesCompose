@@ -68,10 +68,4 @@ class NotesListViewModel(private val repository: NotesRepository): ViewModel() {
             repository.delete(note)
         }
     }
-
-    fun updateNote(note: Note){
-        viewModelScope.launch {
-            repository.update(note)
-        }
-    }
 }

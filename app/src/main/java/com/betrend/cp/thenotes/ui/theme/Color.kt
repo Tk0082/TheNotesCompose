@@ -31,8 +31,9 @@ val YellowNote5 = Color(0xFFFFFEF1)
 val GreenNote  = Color(0xFF8CFF91)
 val GreenNoteL = Color(0xFFD5FFD6)
 val GreenNoteD = Color(0xFF63FF68)
+val GreenNoteDD = Color(0xFF00E207)
 
-val NoteError = Color(0xFFFF8675)
+val NoteError = Color(0xFFFFA295)
 val NoteItemError = Color(0xFFFF6E5A)
 
 val ButtonL = Color(0xFFFFEB3B)
