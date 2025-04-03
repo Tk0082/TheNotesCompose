@@ -1,4 +1,4 @@
-package com.betrend.cp.thenotes.ui.screen
+package com.betrend.cp.thenotes.ui.screen.notes
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -52,8 +52,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.betrend.cp.thenotes.MainActivity
 import com.betrend.cp.thenotes.R
-import com.betrend.cp.thenotes.database.NotesDatabase
-import com.betrend.cp.thenotes.di.repositories.NotesRepository
+import com.betrend.cp.thenotes.data.local.NotesDatabase
+import com.betrend.cp.thenotes.data.local.repository.NotesRepository
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.GraffitLL
@@ -61,8 +61,8 @@ import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
 import com.betrend.cp.thenotes.ui.theme.YellowNote
 import com.betrend.cp.thenotes.ui.theme.YellowNoteD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
-import com.betrend.cp.thenotes.ui.viewmodels.NotesTakerViewModel
-import com.betrend.cp.thenotes.ui.viewmodels.factory.NotesTakerViewModelFactory
+import com.betrend.cp.thenotes.ui.viewmodel.NotesTakerViewModel
+import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesTakerViewModelFactory
 import com.betrend.cp.thenotes.utils.FontSizeBottomSheet
 import com.betrend.cp.thenotes.utils.FontSizeManager
 import com.betrend.cp.thenotes.utils.brushBackNote

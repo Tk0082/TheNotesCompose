@@ -1,11 +1,11 @@
-package com.betrend.cp.thenotes.ui.viewmodels
+package com.betrend.cp.thenotes.ui.viewmodel
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.betrend.cp.thenotes.di.repositories.NotesRepository
-import com.betrend.cp.thenotes.entities.Note
+import com.betrend.cp.thenotes.data.local.repository.NotesRepository
+import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.states.NotesTakerUiState
 import com.betrend.cp.thenotes.utils.getDate
 import kotlinx.coroutines.flow.MutableStateFlow

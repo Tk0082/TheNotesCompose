@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.betrend.cp.thenotes.ui.screen.auth.NotesMailScreen
+import com.betrend.cp.thenotes.ui.screen.notes.NotesListScreen
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
 import com.betrend.cp.thenotes.ui.theme.YellowNoteD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDD

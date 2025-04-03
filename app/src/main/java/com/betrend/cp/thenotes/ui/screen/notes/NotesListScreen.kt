@@ -1,4 +1,4 @@
-package com.betrend.cp.thenotes.ui.screen
+package com.betrend.cp.thenotes.ui.screen.notes
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -67,10 +67,10 @@ import androidx.compose.ui.unit.sp
 import com.betrend.cp.thenotes.NotesTakerActivity
 import com.betrend.cp.thenotes.R.mipmap
 import com.betrend.cp.thenotes.R.string
-import com.betrend.cp.thenotes.database.NotesDatabase
-import com.betrend.cp.thenotes.di.repositories.NotesRepository
-import com.betrend.cp.thenotes.entities.NoteItem
-import com.betrend.cp.thenotes.entities.NoteItemPin
+import com.betrend.cp.thenotes.data.local.NotesDatabase
+import com.betrend.cp.thenotes.data.local.repository.NotesRepository
+import com.betrend.cp.thenotes.ui.components.notes.NoteItem
+import com.betrend.cp.thenotes.ui.components.notes.NoteItemPin
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.NoteError
@@ -79,7 +79,7 @@ import com.betrend.cp.thenotes.ui.theme.YellowNote
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteL
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
-import com.betrend.cp.thenotes.ui.viewmodels.NotesListViewModel
+import com.betrend.cp.thenotes.ui.viewmodel.NotesListViewModel
 import com.betrend.cp.thenotes.utils.ConfirmDeleteDialog
 import com.betrend.cp.thenotes.utils.brushBackNote
 import com.betrend.cp.thenotes.utils.brushBorderButton

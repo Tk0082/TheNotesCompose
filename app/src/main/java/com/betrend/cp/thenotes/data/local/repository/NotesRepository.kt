@@ -1,7 +1,7 @@
-package com.betrend.cp.thenotes.di.repositories
+package com.betrend.cp.thenotes.data.local.repository
 
-import com.betrend.cp.thenotes.database.NotesDao
-import com.betrend.cp.thenotes.entities.Note
+import com.betrend.cp.thenotes.data.local.dao.NotesDao
+import com.betrend.cp.thenotes.data.local.entities.Note
 import kotlinx.coroutines.flow.Flow
 
 class NotesRepository (private val dao: NotesDao){

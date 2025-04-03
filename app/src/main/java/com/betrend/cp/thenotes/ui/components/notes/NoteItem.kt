@@ -1,4 +1,4 @@
-package com.betrend.cp.thenotes.entities
+package com.betrend.cp.thenotes.ui.components.notes
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLLL

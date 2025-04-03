@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.betrend.cp.thenotes.entities.Note
+import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDDD

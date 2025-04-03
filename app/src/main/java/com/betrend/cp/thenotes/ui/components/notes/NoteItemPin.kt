@@ -1,4 +1,4 @@
-package com.betrend.cp.thenotes.entities
+package com.betrend.cp.thenotes.ui.components.notes
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.betrend.cp.thenotes.R
+import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitD
 import com.betrend.cp.thenotes.ui.theme.GreenNoteD

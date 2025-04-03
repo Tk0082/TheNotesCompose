@@ -50,6 +50,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
     //buildToolsVersion = "35.0.0"
@@ -80,6 +81,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -98,7 +100,22 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
 
+    // Firebase
+//    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+//    implementation("com.google.firebase:firebase-auth")
+//    implementation("com.google.firebase:firebase-firestore")
+//    implementation("com.google.firebase:firebase-storage-ktx")// Para upload de imagens
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // API Google Drive
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation ("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
+    implementation ("com.google.api-client:google-api-client-android:2.0.0")
+
     implementation("androidx.compose.compiler:compiler:1.5.15")
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
 
     // Animated BottomNavigationBar
     implementation(libs.animated.navigation.bar)

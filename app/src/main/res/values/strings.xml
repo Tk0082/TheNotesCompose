@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TheNotes</string>
     <string name="title_activity_info">InfoActivity</string>
+    <string name="default_notification_channel_id">notes_sync_channel</string>
 </resources>

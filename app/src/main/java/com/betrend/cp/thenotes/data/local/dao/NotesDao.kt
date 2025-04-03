@@ -1,11 +1,11 @@
-package com.betrend.cp.thenotes.database
+package com.betrend.cp.thenotes.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.betrend.cp.thenotes.entities.Note
+import com.betrend.cp.thenotes.data.local.entities.Note
 import kotlinx.coroutines.flow.Flow
 
 @Dao

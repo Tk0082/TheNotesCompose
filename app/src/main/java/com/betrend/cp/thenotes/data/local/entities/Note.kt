@@ -1,8 +1,7 @@
-package com.betrend.cp.thenotes.entities
+package com.betrend.cp.thenotes.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
 
 @Entity(tableName = "notesdb")
 data class Note(

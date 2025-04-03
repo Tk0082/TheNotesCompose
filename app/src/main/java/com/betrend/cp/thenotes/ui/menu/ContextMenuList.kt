@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.betrend.cp.thenotes.entities.Note
+import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.YellowNoteD
 import com.betrend.cp.thenotes.utils.brushBorderMenu

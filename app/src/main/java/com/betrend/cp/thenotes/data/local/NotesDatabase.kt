@@ -1,10 +1,11 @@
-package com.betrend.cp.thenotes.database
+package com.betrend.cp.thenotes.data.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.betrend.cp.thenotes.entities.Note
+import com.betrend.cp.thenotes.data.local.dao.NotesDao
+import com.betrend.cp.thenotes.data.local.entities.Note
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
