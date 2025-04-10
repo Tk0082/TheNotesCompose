@@ -24,18 +24,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.ripple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -183,8 +183,9 @@ fun NoteItemPin(
                                         .padding(2.dp)
                                         .clickable(
                                             interactionSource = interactionSource,
-                                            indication = rippleIndication ,
-                                            onClick = onShareClick),
+                                            indication = rippleIndication,
+                                            onClick = onShareClick
+                                        ),
                                     contentDescription = null,
                                 )
                                 Spacer(modifier = Modifier.size(10.dp))
@@ -196,20 +197,23 @@ fun NoteItemPin(
                                         .padding(vertical = 1.dp)
                                         .clickable(
                                             interactionSource = interactionSource,
-                                            indication = rippleIndication ,
-                                            onClick = onDeleteClick),
+                                            indication = rippleIndication,
+                                            onClick = onDeleteClick
+                                        ),
                                     contentDescription = null,
                                 )
                                 Spacer(modifier = Modifier.size(10.dp))
                                 Icon(
-                                    Icons.Default.Clear,
+                                    painter = painterResource(id = R.drawable.ic_return),
                                     tint = GreenNoteDD,
                                     modifier = Modifier
                                         .size(30.dp)
+                                        .rotate(-90f)
                                         .clickable(
                                             interactionSource = interactionSource,
-                                            indication = rippleIndication ,
-                                            onClick = onUnpinClick),
+                                            indication = rippleIndication,
+                                            onClick = onUnpinClick
+                                        ),
                                     contentDescription = null
                                 )
                             }
