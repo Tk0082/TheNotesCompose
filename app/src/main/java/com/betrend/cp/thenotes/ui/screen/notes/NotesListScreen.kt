@@ -261,13 +261,11 @@ fun NotesListScreen() {
                                     focusedNoteId.value = null
                                 }
                             }
-
                             NoteItemPin(
                                 note = note,
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
                                     // Evento de clicar na nota para editar
-//                                    viewModel.updateNote(note)
                                     Intent(context, NotesTakerActivity::class.java).also {
                                         it.putExtra("noteId", note.id)
                                         context.startActivity(it)
@@ -367,7 +365,6 @@ fun NotesListScreen() {
                                         note = note,
                                         modifier = Modifier.fillMaxWidth(),
                                         onClick = {
-//                                            viewModel.updateNote(note)
                                             Intent(context, NotesTakerActivity::class.java).also {
                                                 it.putExtra("noteId", note.id)
                                                 context.startActivity(it)

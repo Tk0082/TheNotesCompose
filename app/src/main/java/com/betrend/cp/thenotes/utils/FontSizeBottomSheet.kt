@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,9 +52,7 @@ fun FontSizeBottomSheet(fontSizeManager: FontSizeManager, onDismiss: () -> Unit)
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            fontSizeManager.selsectedFontSize = size
-                            fontSizeManager.fontSize = size
-                            fontSizeManager.showBottomSheet = false
+                            fontSizeManager.saveFontSize(size)
                             onDismiss()
                         },
                     verticalAlignment = Alignment.CenterVertically
@@ -66,9 +65,7 @@ fun FontSizeBottomSheet(fontSizeManager: FontSizeManager, onDismiss: () -> Unit)
                             disabledColor = YellowNoteLL
                         ),
                         onClick = {
-                            fontSizeManager.selsectedFontSize = size
-                            fontSizeManager.fontSize = size
-                            fontSizeManager.showBottomSheet = false
+                            fontSizeManager.saveFontSize(size)
                             onDismiss()
                         }
                     )
@@ -85,4 +82,4 @@ fun FontSizeBottomSheet(fontSizeManager: FontSizeManager, onDismiss: () -> Unit)
 
 @Preview(name = "NoteAct")
 @Composable
-fun BottomPreview() = FontSizeBottomSheet(FontSizeManager(), onDismiss = {})
+fun BottomPreview() = FontSizeBottomSheet(FontSizeManager(LocalContext.current), onDismiss = {})
