@@ -88,6 +88,7 @@ fun NotesMailScreen(){
     TheNotesTheme {
         Scaffold (
             modifier = Modifier
+                .fillMaxSize()
                 .background(YellowNoteLL)
                 .padding(10.dp)
         ) {

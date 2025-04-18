@@ -24,7 +24,7 @@ val YellowNoteDD = Color(0xFFECD822)
 val YellowNoteDDD = Color(0xFFA79D3C)
 val YellowNoteL = Color(0xFFFDFBA3)
 val YellowNoteLL = Color(0xFFFFFAC5)
-val YellowNoteLLL = Color(0xFFFFFFDA)
+val YellowNoteLLL = Color(0xFFFDFDD1)
 val YellowNote4 = Color(0xFFFFFEF4)
 val YellowNote5 = Color(0xFFFFFEF1)
 
