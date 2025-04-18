@@ -2,4 +2,5 @@
     <string name="app_name">TheNotes</string>
     <string name="title_activity_info">InfoActivity</string>
     <string name="default_notification_channel_id">notes_sync_channel</string>
+    <string name="tx_presentation_app">"TheNotes é um aplicativo de notas simples, bonito e fácil de usar.\n Com seu novo design e novas funcionalidades, tenha a melhor experiência na hora de salvar suas notas. "</string>
 </resources>
