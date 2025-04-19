@@ -2,6 +2,8 @@ package com.betrend.cp.thenotes.data.remote.drive
 
 
 import android.icu.text.SimpleDateFormat
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.betrend.cp.thenotes.data.local.dao.NotesDao
 import com.betrend.cp.thenotes.data.local.entities.Note
 import com.google.api.client.http.ByteArrayContent
@@ -22,12 +24,13 @@ class DriveBackupService(
 ) {
     companion object {
         private const val BACKUP_FOLDER_NAME = "TheNotesBackup"
-        private const val BACKUP_FILE_PREFIX = "notes_backup_"
+        private const val BACKUP_FILE_PREFIX = "notes_backup"
         private const val MIME_TYPE_JSON = "application/json"
     }
 
     private var backupFolderId: String? = null
 
+    @RequiresApi(Build.VERSION_CODES.N)
     suspend fun backupNotes(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             // Obter ou criar a pasta de backup

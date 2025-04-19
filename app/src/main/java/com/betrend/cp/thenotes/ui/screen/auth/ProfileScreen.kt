@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.betrend.cp.thenotes.data.local.NotesDatabase
 import com.betrend.cp.thenotes.data.remote.entities.UserData
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitDD
@@ -48,7 +49,7 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
     rememberCoroutineScope()
-    NotesMailViewModel(context)
+    NotesMailViewModel(context, NotesDatabase.getNotes(context))
     Column(
         modifier = Modifier
             .fillMaxSize()
