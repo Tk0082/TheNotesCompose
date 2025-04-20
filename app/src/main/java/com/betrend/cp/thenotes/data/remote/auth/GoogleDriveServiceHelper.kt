@@ -1,17 +1,20 @@
 package com.betrend.cp.thenotes.data.remote.auth
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.http.FileContent
+import com.google.api.client.http.ByteArrayContent
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Collections
 
 class GoogleDriveServiceHelper(context: Context) {
@@ -27,43 +30,71 @@ class GoogleDriveServiceHelper(context: Context) {
     private fun getDriveService(account: GoogleSignInAccount): Drive {
         val credential = GoogleAccountCredential.usingOAuth2(
             context,
-            Collections.singletonList(DriveScopes.DRIVE_FILE)
+            Collections.singleton(DriveScopes.DRIVE_FILE)
         )
         credential.selectedAccount = account.account
 
         return Drive.Builder(
             NetHttpTransport(),
-            GsonFactory.getDefaultInstance(),
+            GsonFactory(),
             credential
         )
             .setApplicationName("TheNotes")
             .build()
     }
 
-    fun uploadFileToDrive(
+    suspend fun uploadFileToDrive(
         account: GoogleSignInAccount,
         filePath: String,
         fileName: String
-    ): String? {
-        return try {
-            val driveService = getDriveService(account)
-            val fileMetadata = File().apply {
-                name = fileName
-                parents = listOf("root")
-            }
-            val fileContent = java.io.File(filePath)
-            val mediaContent = FileContent(
-                "application/x-sqlite3",
-                fileContent
-            )
+    ): String? = withContext(Dispatchers.IO) {
+        try {
 
-            val file = driveService.files().create(fileMetadata, mediaContent)
-                .setFields("id")
-                .execute()
-            file.id
+            val driveService = getDriveService(account)
+            val fileContent = java.io.File(filePath).readBytes()
+            val mediaContent = ByteArrayContent("application/json", fileContent)
+
+            // Verificar se existe arquivo no DRIVE (Criar ou Sobrescrever)
+            val existingFileId = findFileIdByName(getDriveService(account), fileName)
+            if(existingFileId != null){
+                val fileMetadata = File().setName(fileName)
+
+                driveService.files().update(existingFileId, fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute()
+                    .id
+            } else {
+                val fileMetadata = File().apply {
+                    name = fileName
+                    mimeType = "application/json"
+                    parents = listOf("root")
+                }
+                driveService.files().create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute()
+                    .id
+            }
         } catch (e: Exception) {
+            Log.e("DRIVE_SERVICE", "Erro no upload", e)
             e.printStackTrace()
             null
+        }
+    }
+
+    private suspend fun findFileIdByName(driveService: Drive, fileName: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = driveService.files().list()
+                    .setQ("name = '$fileName' and trashed = false")
+                    .setSpaces("drive")
+                    .setFields("files(id)")
+                    .execute()
+
+                result.files.firstOrNull()?.id
+            } catch (e: Exception) {
+                Log.e("DRIVE_SEARCH", "Erro ao buscar arquivo", e)
+                null
+            }
         }
     }
 }

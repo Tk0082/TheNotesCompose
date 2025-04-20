@@ -1,7 +1,10 @@
 package com.betrend.cp.thenotes.ui.screen.auth
 
 import android.content.Context
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,14 +15,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,10 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.betrend.cp.thenotes.R
 import com.betrend.cp.thenotes.ui.theme.Graffit
+import com.betrend.cp.thenotes.ui.theme.GraffitD
 import com.betrend.cp.thenotes.ui.theme.GraffitDD
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.GraffitLL
+import com.betrend.cp.thenotes.ui.theme.Transparent
 import com.betrend.cp.thenotes.ui.theme.YellowNote
+import com.betrend.cp.thenotes.utils.brushBackButton
+import com.betrend.cp.thenotes.utils.brushBorderButton
 
 @Composable
 fun LoginScreen(
@@ -73,19 +86,37 @@ fun LoginScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp)),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = YellowNote,
-                contentColor = GraffitDD
-            )
-        ) {
-            Text(
-                text = "Continuar com Google",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
+                .alpha(.9f)
+                .padding(5.dp)
+                .shadow(3.dp, RoundedCornerShape(50.dp), true, GraffitD)
+                .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
+                .background(
+                    brush = brushBackButton(),
+                    shape = RoundedCornerShape(50.dp)
+                ),
+            colors = ButtonColors(
+                containerColor = Transparent,
+                contentColor = Graffit,
+                disabledContentColor = GraffitL,
+                disabledContainerColor = Transparent
+            ),
+            content = {
+                Text(
+                    text = "Continuar com Google",
+                    style = TextStyle(
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        shadow = Shadow(
+                            GraffitL,
+                            offset = Offset.VisibilityThreshold,
+                            blurRadius = 5f
+                        )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Ao continuar, você concorda com nossos Termos de Serviço e Política de Privacidade",

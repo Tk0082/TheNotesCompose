@@ -175,7 +175,7 @@ fun NotesInfoScreen(){
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .alpha(.8f)
+                                    .alpha(.9f)
                                     .padding(vertical = 5.dp, horizontal = 50.dp)
                                     .shadow(3.dp, RoundedCornerShape(50.dp), true, GraffitD)
                                     .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
@@ -216,7 +216,7 @@ fun NotesInfoScreen(){
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .alpha(.8f)
+                                    .alpha(.9f)
                                     .padding(vertical = 5.dp, horizontal = 50.dp)
                                     .shadow(3.dp, RoundedCornerShape(50.dp), true, GraffitD)
                                     .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
@@ -273,7 +273,7 @@ fun NotesInfoScreen(){
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .alpha(.8f)
+                                    .alpha(.9f)
                                     .padding(vertical = 5.dp, horizontal = 50.dp)
                                     .shadow(3.dp, RoundedCornerShape(50.dp), true, GraffitD)
                                     .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
@@ -334,7 +334,7 @@ fun NotesInfoScreen(){
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .alpha(.8f)
+                                    .alpha(.9f)
                                     .padding(
                                         top = 5.dp, start = 50.dp, end = 50.dp, bottom = 50.dp
                                     )

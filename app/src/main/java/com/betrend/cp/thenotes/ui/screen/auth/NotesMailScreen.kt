@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,24 +35,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.betrend.cp.thenotes.NotesInfoActivity
 import com.betrend.cp.thenotes.R
+import com.betrend.cp.thenotes.data.local.NotesDatabase
 import com.betrend.cp.thenotes.data.remote.auth.AuthState
 import com.betrend.cp.thenotes.data.remote.auth.GoogleAuthManager
 import com.betrend.cp.thenotes.data.remote.entities.UserData
+import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
 import com.betrend.cp.thenotes.ui.theme.White
 import com.betrend.cp.thenotes.ui.theme.YellowNote
+import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
+import com.betrend.cp.thenotes.ui.theme.YellowNoteDDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
+import com.betrend.cp.thenotes.ui.theme.YellowNoteLLL
 import com.betrend.cp.thenotes.ui.viewmodel.NotesMailViewModel
+import com.betrend.cp.thenotes.utils.brushMenu
 import com.betrend.cp.thenotes.utils.showToast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import java.io.File
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NotesMailScreen(){
     val context = LocalContext.current
-    val viewModel: NotesMailViewModel = remember { NotesMailViewModel(context) }
+    val viewModel: NotesMailViewModel = remember { NotesMailViewModel(context, NotesDatabase.getNotes(context)) }
     var authState by remember { mutableStateOf<AuthState>(AuthState.Login) }
     val googleAuthManager = remember { GoogleAuthManager(context) }
+
+    var showDialog by remember { mutableStateOf(false) }
+    var exportResult by remember { mutableStateOf<File?>(null) }
 
     // Launcher para o resultado do login
     val signInLauncher = rememberLauncherForActivityResult(
@@ -69,6 +83,9 @@ fun NotesMailScreen(){
             }
         }
     }
+
+    // Obter a conta atual do ViewModel
+    val currentAccount = viewModel.uiState.account
 
     // Efeito de verificação de Usuári Logado
     LaunchedEffect(Unit) {
@@ -121,8 +138,6 @@ fun NotesMailScreen(){
                             context = context
                         )
                         is AuthState.LoggedIn -> {
-                            // Obter a conta atual do ViewModel
-                            val currentAccount = viewModel.uiState.account
                             if (currentAccount != null) {
                                 ProfileScreen(
                                     user = currentState.user,
@@ -130,8 +145,47 @@ fun NotesMailScreen(){
                                         googleAuthManager.signOut()
                                         authState = AuthState.Login
                                     },
-                                    onUpdateNotes = { viewModel.uploadNotesToDrive(currentAccount) },
+                                    onUpdateNotes = {
+                                        showDialog = true
+                                        // Chamar a função de exportação em uma coroutine
+                                        viewModel.exportNotes { file ->
+                                            exportResult = file
+                                        }
+                                    },
                                     onRestoreNotes = {  }
+                                )
+                            }
+                            if (showDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showDialog = false },
+                                    title = {
+                                        Text(if (exportResult != null) "Backup de Notas" else "Backup falhou")
+                                    },
+                                    text = {
+                                        Text(if (exportResult != null)
+                                            "Notas exportadas para JSON em: ${exportResult?.path} \n\n Confirmar para subir ao Drive."
+                                        else
+                                            "Falha ao exportar notas")
+                                    },
+                                    confirmButton = {
+                                        Button(onClick = {
+                                            currentAccount?.let {
+                                                viewModel.uploadNotesToDrive(
+                                                    it
+                                                )
+                                            }
+                                            showDialog = false },
+                                            colors = ButtonDefaults.buttonColors(containerColor = YellowNoteDD,
+                                                contentColor = YellowNoteLLL
+                                            )
+                                        ) {
+                                            Text("OK")
+                                        }
+                                    },
+                                    containerColor = YellowNoteLL,
+                                    modifier = Modifier.background(brush = brushMenu(), shape = RoundedCornerShape(28.dp)),
+                                    titleContentColor = YellowNoteDDD,
+                                    textContentColor = GraffitL,
                                 )
                             }
                         }

@@ -1,6 +1,8 @@
 package com.betrend.cp.thenotes.ui.screen.auth
 
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,30 +16,41 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.betrend.cp.thenotes.data.local.NotesDatabase
 import com.betrend.cp.thenotes.data.remote.entities.UserData
 import com.betrend.cp.thenotes.ui.theme.Graffit
-import com.betrend.cp.thenotes.ui.theme.GraffitDD
+import com.betrend.cp.thenotes.ui.theme.GraffitD
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.GraffitLLL
+import com.betrend.cp.thenotes.ui.theme.Transparent
 import com.betrend.cp.thenotes.ui.theme.White
 import com.betrend.cp.thenotes.ui.theme.YellowNote
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDDD
 import com.betrend.cp.thenotes.ui.viewmodel.NotesMailViewModel
+import com.betrend.cp.thenotes.utils.brushBackButton
+import com.betrend.cp.thenotes.utils.brushBorderButton
+import com.betrend.cp.thenotes.utils.brushPanel
 
 @Composable
 fun ProfileScreen(
@@ -48,7 +61,7 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
     rememberCoroutineScope()
-    NotesMailViewModel(context)
+    NotesMailViewModel(context, NotesDatabase.getNotes(context))
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,15 +71,21 @@ fun ProfileScreen(
     ) {
         // Foto do usuário
         if (user.photoUrl != null) {
-            AsyncImage(
-                model = user.photoUrl,
-                contentDescription = "Foto do usuário",
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(GraffitLLL),
-                contentScale = ContentScale.Crop
-            )
+            Box(modifier = Modifier
+                .border(1.dp, YellowNote, RoundedCornerShape(60.dp))
+                .shadow(3.dp, RoundedCornerShape(60.dp), true, Graffit)
+                .background(GraffitLLL, RoundedCornerShape(60.dp))
+            ){
+                AsyncImage(
+                    model = user.photoUrl,
+                    contentDescription = "Foto do usuário",
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .background(GraffitLLL),
+                    contentScale = ContentScale.Crop
+                )
+            }
         } else {
             Box(
                 modifier = Modifier
@@ -102,51 +121,83 @@ fun ProfileScreen(
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         HorizontalDivider(color = GraffitLLL, thickness = 1.dp)
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         // Botão para atualizar notas
         Button(
             onClick = onUpdateNotes,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp)),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = YellowNote,
-                contentColor = GraffitDD
-            )
+                .alpha(.9f)
+                .padding(5.dp)
+                .shadow(3.dp, RoundedCornerShape(50.dp), true, GraffitD)
+                .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
+                .background(
+                    brush = brushBackButton(),
+                    shape = RoundedCornerShape(50.dp)
+                ),
+            colors = ButtonColors(
+                containerColor = Transparent,
+                contentColor = Graffit,
+                disabledContentColor = GraffitL,
+                disabledContainerColor = Transparent
+            ),
         ) {
             Text(
                 text = "Atualizar Notas no Drive",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 8.dp)
+                style = TextStyle(
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    shadow = Shadow(
+                        GraffitL,
+                        offset = Offset.VisibilityThreshold,
+                        blurRadius = 5f
+                    )
+                )
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = onRestoreNotes,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp)),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = YellowNote,
-                contentColor = GraffitDD
-            )
+                .alpha(.9f)
+                .padding(5.dp)
+                .shadow(3.dp, RoundedCornerShape(50.dp), true, GraffitD)
+                .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
+                .background(
+                    brush = brushBackButton(),
+                    shape = RoundedCornerShape(50.dp)
+                ),
+            colors = ButtonColors(
+                containerColor = Transparent,
+                contentColor = Graffit,
+                disabledContentColor = GraffitL,
+                disabledContainerColor = Transparent
+            ),
         ) {
             Text(
                 text = "Restaurar Notas do Drive",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 8.dp)
+                style = TextStyle(
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    shadow = Shadow(
+                        GraffitL,
+                        offset = Offset.VisibilityThreshold,
+                        blurRadius = 5f
+                    )
+                )
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         // Botão de logout
         Text(
@@ -157,7 +208,6 @@ fun ProfileScreen(
             modifier = Modifier.clickable { onLogout() }
         )
     }
-
 }
 
 @Preview

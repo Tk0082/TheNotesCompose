@@ -139,7 +139,7 @@ fun NotesListScreen() {
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier
-                    .border(.5.dp, brushBorderButton(), RoundedCornerShape(15.dp)),
+                    .border(1.dp, brushBorderButton(), RoundedCornerShape(20.dp)),
                 containerColor = YellowNote,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = 3.dp,

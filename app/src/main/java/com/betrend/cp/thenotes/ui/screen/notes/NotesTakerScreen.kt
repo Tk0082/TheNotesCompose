@@ -55,6 +55,7 @@ import com.betrend.cp.thenotes.R
 import com.betrend.cp.thenotes.data.local.NotesDatabase
 import com.betrend.cp.thenotes.data.local.repository.NotesRepository
 import com.betrend.cp.thenotes.ui.theme.Graffit
+import com.betrend.cp.thenotes.ui.theme.GraffitD
 import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.GraffitLL
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
@@ -65,6 +66,7 @@ import com.betrend.cp.thenotes.ui.viewmodel.NotesTakerViewModel
 import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesTakerViewModelFactory
 import com.betrend.cp.thenotes.utils.FontSizeBottomSheet
 import com.betrend.cp.thenotes.utils.FontSizeManager
+import com.betrend.cp.thenotes.utils.brushBackButton
 import com.betrend.cp.thenotes.utils.brushBackNote
 import com.betrend.cp.thenotes.utils.brushBorderButton
 import com.betrend.cp.thenotes.utils.getDate
@@ -221,9 +223,12 @@ fun NotesTakerScreen() {
                             modifier = Modifier
                                 .height(50.dp)
                                 .width(50.dp)
-                                .shadow(1.dp, RoundedCornerShape(60.dp))
-                                .background(YellowNote, RoundedCornerShape(50.dp))
-                                .border(.5.dp, brushBorderButton(), RoundedCornerShape(50.dp)),
+                                .shadow(1.dp, RoundedCornerShape(50.dp), true, GraffitD)
+                                .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
+                                .background(
+                                    brush = brushBackButton(),
+                                    shape = RoundedCornerShape(50.dp)
+                                ),
                             content = {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
@@ -254,9 +259,12 @@ fun NotesTakerScreen() {
                             modifier = Modifier
                                 .height(40.dp)
                                 .width(160.dp)
-                                .shadow(1.dp, RoundedCornerShape(60.dp))
-                                .background(YellowNote, RoundedCornerShape(50.dp))
-                                .border(.5.dp, brushBorderButton(), RoundedCornerShape(50.dp)),
+                                .shadow(1.dp, RoundedCornerShape(50.dp), true, GraffitD)
+                                .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
+                                .background(
+                                    brush = brushBackButton(),
+                                    shape = RoundedCornerShape(50.dp)
+                                ),
                             content = {
                                 Row(
                                     modifier = Modifier.padding(5.dp),

@@ -18,6 +18,10 @@ interface NotesDao {
     @Update //@Query("UPDATE notesdb SET name = :name, content = :content WHERE ID = :id")
     suspend fun update(note: Note)
 
+    /* Pegar todas as Notas Pinadas e não Pinadas*/
+    @Query("SELECT * FROM notesdb ORDER BY id ASC")
+    suspend fun getAllNotes(): List<Note>
+
     /* Pegar todas as Notas não Pinadas*/
     @Query("SELECT * FROM notesdb WHERE isPinned == 0 ORDER BY id ASC")
     fun getAll(): Flow<List<Note>>
