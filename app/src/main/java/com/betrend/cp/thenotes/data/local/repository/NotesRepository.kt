@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 class NotesRepository (private val dao: NotesDao){
 
-    fun getAllNotes(): Flow<List<Note>> = dao.getAll()
+    fun getAllNotes(): Flow<List<Note>> = dao.getNotes()
 
     suspend fun getNoteById(id: Int): Note? = dao.getNoteById(id)
 

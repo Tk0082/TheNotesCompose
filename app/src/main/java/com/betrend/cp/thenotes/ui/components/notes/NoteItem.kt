@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitD
-import com.betrend.cp.thenotes.ui.theme.YellowNoteLLL
+import com.betrend.cp.thenotes.utils.brushYellow
 import com.betrend.cp.thenotes.utils.textScrool
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -34,19 +35,22 @@ fun NoteItem(
     note: Note,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    brush: Brush // Receber o Brush Selecionado
 ) {
+//    val brushes = listOf(brushYellow(), brushGreen(), brushRed(), brushBlue(), brushOrange(), brushLime(), brushWine())
+//    val randomBrushes = brushes[Random.nextInt(brushes.size)]
+    val scrollState = rememberScrollState()
     Box(
         Modifier
             .fillMaxWidth()
             .padding(2.dp)
     ) {
-        val scrollState = rememberScrollState()
         Row(
             modifier = Modifier
                 .padding(2.dp)
                 .shadow(2.dp, RoundedCornerShape(15.dp))
-                .background(YellowNoteLLL, RoundedCornerShape(15.dp))
+                .background(brush, RoundedCornerShape(15.dp))
         ){
             Column(
                 modifier = Modifier
@@ -103,7 +107,7 @@ fun NoteItem(
                         ),
                         modifier = Modifier
                             .align(Alignment.End)
-                            .padding(end = 5.dp),
+                            .padding(end = 15.dp),
                         maxLines = 1
                     )
                 }
@@ -115,5 +119,5 @@ fun NoteItem(
 @Preview
 @Composable
 fun ItemPreview(){
-    NoteItem(note = Note(id = 0, name = "Teste", content = "Content", time = "1:00", isPinned = false), onClick = {}, onLongClick = {})
+    NoteItem(note = Note(id = 0, name = "Teste", content = "Content", time = "1:00", isPinned = false, color = brushYellow().toString()), onClick = {}, onLongClick = {}, brush = brushYellow())
 }

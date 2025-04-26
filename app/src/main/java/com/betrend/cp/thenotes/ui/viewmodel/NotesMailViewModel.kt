@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.betrend.cp.thenotes.data.local.NotesDatabase
 import com.betrend.cp.thenotes.data.local.entities.Note
-import com.betrend.cp.thenotes.data.remote.auth.GoogleDriveServiceHelper
+import com.betrend.cp.thenotes.data.remote.drive.GoogleDriveServiceHelper
 import com.google.android.gms.auth.GoogleAuthException
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
@@ -29,6 +29,8 @@ data class DriveUiState(
     val backupFileName: String = "notes_backup.db"
 )
 
+
+
 class NotesMailViewModel(context: Context, private val database: NotesDatabase): ViewModel() {
 
     val context: Context by lazy { context.applicationContext }
@@ -38,16 +40,26 @@ class NotesMailViewModel(context: Context, private val database: NotesDatabase):
 
     private val fileName: String = "notes_backup.json"
 
-    // Estado para controlar o upload
-    var uploadState by mutableStateOf<UploadState>(UploadState.Idle)
-        private set
-
     sealed class UploadState {
         data object Idle : UploadState()
         data object Loading : UploadState()
         data class Success(val fileId: String) : UploadState()
         data class Error(val message: String) : UploadState()
     }
+
+    // Estado para controlar o upload
+    var uploadState by mutableStateOf<UploadState>(UploadState.Idle)
+        private set
+
+    sealed class DownloadState {
+        data object Idle : DownloadState()
+        data object Loading : DownloadState()
+        data object Success : DownloadState()
+        data class Error(val message: String) : DownloadState()
+    }
+
+    var downloadState by mutableStateOf<DownloadState>(DownloadState.Idle)
+        private set
 
     // Função para fazer upload do banco de dados
     @Suppress("KotlinConstantConditions")
@@ -123,7 +135,8 @@ class NotesMailViewModel(context: Context, private val database: NotesDatabase):
                         name = note.name,
                         content = note.content,
                         time = note.time,
-                        isPinned = note.isPinned
+                        isPinned = note.isPinned,
+                        color = note.color
                     )
                 }
 
@@ -142,5 +155,60 @@ class NotesMailViewModel(context: Context, private val database: NotesDatabase):
         }
     }
     //================================================================
+
+    fun downloadAndUpdateNotesFromDrive(account: GoogleSignInAccount) {
+        viewModelScope.launch(Dispatchers.IO) {
+            downloadState = DownloadState.Loading
+            try {
+                // Verificar se o arquivo existe no Drive
+                val fileId = driveServiceHelper.findFileByName(account, fileName)
+
+                if (fileId == null) {
+                    withContext(Dispatchers.Main) {
+                        downloadState = DownloadState.Error("Arquivo não encontrado no Drive")
+                    }
+                    return@launch
+                }
+
+                // Download do arquivo
+                val jsonContent = driveServiceHelper.downloadFile(account, fileId)
+
+                if (jsonContent.isNullOrEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        downloadState = DownloadState.Error("Falha ao baixar o arquivo")
+                    }
+                    return@launch
+                }
+
+                // Converter JSON para lista de notas
+                val notes = Gson().fromJson(jsonContent, Array<Note>::class.java).toList()
+
+                // Atualizar o RoomDB
+                database.notesDao().deleteAllNotes() // Limpa as notas existentes
+                database.notesDao().insertAllNotes(notes) // Insere as novas notas
+
+                withContext(Dispatchers.Main) {
+                    downloadState = DownloadState.Success
+                }
+            } catch (e: Exception) {
+                val errorMessage = when (e) {
+                    is UserRecoverableAuthIOException -> "Autenticação necessária"
+                    is GooglePlayServicesAvailabilityIOException -> "Google Play Services não disponível"
+                    is GoogleAuthException -> "Erro de autenticação"
+                    is IOException -> "Erro de rede: ${e.message}"
+                    else -> "Erro desconhecido: ${e.message}"
+                }
+
+                withContext(Dispatchers.Main) {
+                    downloadState = DownloadState.Error(errorMessage)
+                }
+            }
+        }
+    }
+
+    // Função para resetar o estado de download
+    fun resetDownloadState() {
+        downloadState = DownloadState.Idle
+    }
 }
 

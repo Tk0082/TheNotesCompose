@@ -36,6 +36,10 @@ fun ConfirmDeleteDialog(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = YellowNoteDD,
                     contentColor = YellowNoteLLL
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 5.dp
                 )
             ) {
                 Text(text = "Remover", fontWeight = FontWeight.Bold)

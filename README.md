@@ -14,16 +14,15 @@
 ✅ **Marcadores coloridos** para organização  
 ✅ **Persistência local** com Room Database  
 ✅ Arquitetura **MVVM + Clean Architecture**  
-
-##  Inclusões Futuras
-⭕ Conexão com o **Google Drive**
-⭕ Sincronização de **Backup**, resgatando notas em qualquer dispositivo
+✅ Conexão com o **Google Drive**   
+✅ Sincronização de **Backup**, resgatando notas em qualquer dispositivo
 
 ## 📲 Tecnologias  
 - **Kotlin**  
 - **Jetpack Compose** (UI declarativa)  
 - **ViewModel** + **Coroutines** (gerenciamento de estado)  
 - **Room Database** (armazenamento offline)  
+- **Google Drive API** (armazenamentoto online)  
 
 #
-## <p align="center"> Desenvolvido com 😀💪💦 por <a href="https://github.com/Tk0082">Alan Souza</a> e <a href="https://github.com/ga6rielferreira">Gabriel Ferreira</a> </p>
+## <p align="center"> Desenvolvido com 😀💪💦 por <a href="https://github.com/Tk0082">Alan Souza</a> e <a href="https://github.com/gabrieldiferreira">Gabriel Ferreira</a> </p>

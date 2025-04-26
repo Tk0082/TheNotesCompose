@@ -19,7 +19,7 @@ runtimeLivedata = "1.7.8"
 
 roomRuntime = "2.6.1"
 
-kspVersion = "2.0.20-1.0.24"
+kspVersion = "2.0.21-1.0.28"
 firebaseMessagingKtx = "24.1.1"
 
 [libraries]

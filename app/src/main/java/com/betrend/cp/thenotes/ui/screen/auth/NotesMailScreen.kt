@@ -30,16 +30,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.betrend.cp.thenotes.NotesInfoActivity
 import com.betrend.cp.thenotes.R
-import com.betrend.cp.thenotes.data.local.NotesDatabase
 import com.betrend.cp.thenotes.data.remote.auth.AuthState
 import com.betrend.cp.thenotes.data.remote.auth.GoogleAuthManager
 import com.betrend.cp.thenotes.data.remote.entities.UserData
 import com.betrend.cp.thenotes.ui.theme.GraffitL
+import com.betrend.cp.thenotes.ui.theme.NoteError
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
 import com.betrend.cp.thenotes.ui.theme.White
 import com.betrend.cp.thenotes.ui.theme.YellowNote
@@ -48,16 +53,19 @@ import com.betrend.cp.thenotes.ui.theme.YellowNoteDDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLLL
 import com.betrend.cp.thenotes.ui.viewmodel.NotesMailViewModel
+import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesMailViewModelFactory
 import com.betrend.cp.thenotes.utils.brushMenu
+import com.betrend.cp.thenotes.utils.showMessage
 import com.betrend.cp.thenotes.utils.showToast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import kotlinx.coroutines.delay
 import java.io.File
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NotesMailScreen(){
     val context = LocalContext.current
-    val viewModel: NotesMailViewModel = remember { NotesMailViewModel(context, NotesDatabase.getNotes(context)) }
+    val viewModel: NotesMailViewModel = viewModel(factory = NotesMailViewModelFactory(context) )
     var authState by remember { mutableStateOf<AuthState>(AuthState.Login) }
     val googleAuthManager = remember { GoogleAuthManager(context) }
 
@@ -83,6 +91,8 @@ fun NotesMailScreen(){
             }
         }
     }
+
+    val downloadState = viewModel.downloadState
 
     // Obter a conta atual do ViewModel
     val currentAccount = viewModel.uiState.account
@@ -110,7 +120,8 @@ fun NotesMailScreen(){
                 .padding(10.dp)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .background(YellowNoteLL)
             ) {
                 IconButton(
@@ -152,7 +163,11 @@ fun NotesMailScreen(){
                                             exportResult = file
                                         }
                                     },
-                                    onRestoreNotes = {  }
+                                    onRestoreNotes = {
+                                        viewModel.uiState.account?.let { account ->
+                                            viewModel.downloadAndUpdateNotesFromDrive(account)
+                                        }
+                                    }
                                 )
                             }
                             if (showDialog) {
@@ -162,10 +177,19 @@ fun NotesMailScreen(){
                                         Text(if (exportResult != null) "Backup de Notas" else "Backup falhou")
                                     },
                                     text = {
-                                        Text(if (exportResult != null)
-                                            "Notas exportadas para JSON em: ${exportResult?.path} \n\n Confirmar para subir ao Drive."
-                                        else
-                                            "Falha ao exportar notas")
+                                        Text(
+                                            if (exportResult != null)
+                                                "Notas exportadas para: \n${exportResult?.name} \n\nConfirmar para subir JSON ao Drive."
+                                            else
+                                                "Falha ao exportar notas"
+                                            ,
+                                            style = TextStyle(
+                                                textAlign = TextAlign.Start,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Normal
+                                            )
+
+                                        )
                                     },
                                     confirmButton = {
                                         Button(onClick = {
@@ -193,7 +217,11 @@ fun NotesMailScreen(){
                     // Mostrar feedback do upload
                     when (val state = viewModel.uploadState) {
                         is NotesMailViewModel.UploadState.Loading -> {
-                            showToast(context, "Fazendo Upload para o Drive!")
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                                color = YellowNoteDDD
+                            )
+                            showToast(context, "Fazendo Upload das Notas para o Drive!")
                         }
                         is NotesMailViewModel.UploadState.Success -> {
                             LaunchedEffect(state) {
@@ -206,6 +234,33 @@ fun NotesMailScreen(){
                                 showToast(context, "Erro: ${state.message}")
                                 viewModel.resetUploadState()
                             }
+                        }
+                        else -> {}
+                    }
+                    // Feedback do estado de download
+                    when (downloadState) {
+                        is NotesMailViewModel.DownloadState.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                                color = YellowNoteDDD
+                            )
+                            showToast(context, "Restaurando as Notas do Drive!")
+                        }
+                        is NotesMailViewModel.DownloadState.Error -> {
+                            val error =
+                                downloadState.message
+                            Text("Erro: $error", color = NoteError)
+                            Button(onClick = { viewModel.resetDownloadState() }) {
+                                Text("OK")
+                            }
+                        }
+                        is NotesMailViewModel.DownloadState.Success -> {
+                            LaunchedEffect(Unit) {
+                                // Fechar o diálogo de sucesso após 2 segundos
+                                delay(2000)
+                                viewModel.resetDownloadState()
+                            }
+                            showMessage(context, "Notas restauradas com sucesso!")
                         }
                         else -> {}
                     }

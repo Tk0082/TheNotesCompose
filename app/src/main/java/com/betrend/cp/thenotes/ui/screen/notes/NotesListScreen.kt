@@ -64,6 +64,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.betrend.cp.thenotes.NotesTakerActivity
 import com.betrend.cp.thenotes.R.mipmap
 import com.betrend.cp.thenotes.R.string
@@ -80,11 +81,21 @@ import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteL
 import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.ui.viewmodel.NotesListViewModel
+import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesListViewModelFactory
 import com.betrend.cp.thenotes.utils.ConfirmDeleteDialog
+import com.betrend.cp.thenotes.utils.NoteSelectDialog
 import com.betrend.cp.thenotes.utils.brushBackNote
+import com.betrend.cp.thenotes.utils.brushBlue
 import com.betrend.cp.thenotes.utils.brushBorderButton
 import com.betrend.cp.thenotes.utils.brushBorderNote
+import com.betrend.cp.thenotes.utils.brushGreen
+import com.betrend.cp.thenotes.utils.brushLime
+import com.betrend.cp.thenotes.utils.brushOrange
+import com.betrend.cp.thenotes.utils.brushRed
+import com.betrend.cp.thenotes.utils.brushWine
+import com.betrend.cp.thenotes.utils.brushYellow
 import com.betrend.cp.thenotes.utils.shareText
+import com.betrend.cp.thenotes.utils.showMessage
 import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -98,7 +109,7 @@ fun NotesListScreen() {
     val notesRepository = NotesRepository(NotesDatabase.getNotes(context).notesDao())
 
     // Criar o ViewModel
-    val viewModel = remember { NotesListViewModel(notesRepository) }
+    val viewModel: NotesListViewModel = viewModel(factory = NotesListViewModelFactory(notesRepository) )
 
     // Coletando o estado de UI
     val uiState by viewModel.uiState.collectAsState()
@@ -145,6 +156,7 @@ fun NotesListScreen() {
                     defaultElevation = 3.dp,
                     pressedElevation = 10.dp
                 ),
+                shape = RoundedCornerShape(20.dp),
                 onClick = {
                     Intent(context, NotesTakerActivity::class.java).also {
                         it.putExtra("noteId", -1)
@@ -205,7 +217,7 @@ fun NotesListScreen() {
                                 viewModel.searchNotes(newQuery)
                             },
                             onSearch = {
-                                focusManager.clearFocus()
+                                focusManager.clearFocus(true)
                             },
                             expanded = false,
                             onExpandedChange = {  },
@@ -218,6 +230,7 @@ fun NotesListScreen() {
                                         contentDescription = null,
                                         modifier = Modifier.clickable {
                                             txSearch.value = ""
+                                            focusManager.clearFocus(true)
                                         }
                                     )
                                 }
@@ -229,9 +242,11 @@ fun NotesListScreen() {
                                 )
                                 .border(.5.dp, brushBorderNote(), RoundedCornerShape(50.dp))
                                 .onFocusChanged { focusState ->
-                                    if (!focusState.isFocused) {
+                                    if (focusState.isFocused) {
+                                        focusState.hasFocus
+                                    }else{
                                         // Oculta o teclado quando perder o foco
-                                        focusManager.clearFocus()
+                                        focusManager.clearFocus(true)
                                     }
                                 }
                         )
@@ -310,6 +325,21 @@ fun NotesListScreen() {
                             .weight(1f, true)
                     ) {
                         items(notes, key = { it.id }) { note ->
+                            var showColorDialog by remember { mutableStateOf(false) }
+
+                            // Converter a cor da nota para Brush
+                            val currentBrush = when (note.color) {
+                                    "amarelo" -> brushYellow()
+                                    "verde" -> brushGreen()
+                                    "vermelho" -> brushRed()
+                                    "azul" -> brushBlue()
+                                    "laranja" -> brushOrange()
+                                    "limao" -> brushLime()
+                                    "vinho" -> brushWine()
+                                    else -> brushYellow()
+                                }
+
+
                             val dismissState = rememberDismissState(
                                 // Ações de Deletar e Compartilhar no Swipe
                                 confirmStateChange = {
@@ -371,21 +401,38 @@ fun NotesListScreen() {
                                             }
                                         },
                                         onLongClick = {
-                                            viewModel.pinNote(note)
-                                        }
+                                            showColorDialog = true
+
+                                        },
+                                        brush = currentBrush
                                     )
-                                    // Chama a função ConfirmAlertDialog passando o ID da nota
                                     if (showDialogId.value == note.id.toString()) {
                                         ConfirmDeleteDialog(
                                             note = note,
                                             onDismiss = { showDialogId.value = null },
                                             onConfirm = {
                                                 viewModel.removeNote(note)
+                                                showMessage(context, "Nota, ${note.name} deletada!")
                                                 showDialogId.value = null
                                             }
                                         )
                                     }
                                 }
+                            )
+                            NoteSelectDialog(
+                                showDialog = showColorDialog,
+                                onDismiss = { showColorDialog = false },
+                                onColorSelected = { colorHex ->
+                                    viewModel.updateNote(note.copy(color = colorHex))
+                                },
+                                onBrushSelected = { },
+                                onConfirm = {
+                                    viewModel.fetchNotes()
+                                    showColorDialog = false
+                                },
+                                onFavorite = { viewModel.pinNote(note) },
+                                initialColor = note.color,
+                                initialBrush = currentBrush
                             )
                         }
                     }

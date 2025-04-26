@@ -124,7 +124,7 @@ fun NoteItemPin(
                     )
                     if (note.isPinned) {
                         Image(
-                            modifier = Modifier.size(25.dp),
+                            modifier = Modifier.size(21.dp),
                             painter = painterResource(id = R.mipmap.thenotes),
                             contentDescription = null,
                         )
@@ -150,8 +150,7 @@ fun NoteItemPin(
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(1f, true)
-                                    .padding(start = 5.dp),
+                                    .weight(1f, true),
                                 maxLines = 2
                             )
                             Text(
@@ -180,7 +179,7 @@ fun NoteItemPin(
                                     tint = YellowNoteDD,
                                     modifier = Modifier
                                         .size(30.dp)
-                                        .padding(2.dp)
+                                        .padding(1.dp)
                                         .clickable(
                                             interactionSource = interactionSource,
                                             indication = rippleIndication,
@@ -204,10 +203,11 @@ fun NoteItemPin(
                                 )
                                 Spacer(modifier = Modifier.size(10.dp))
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_return),
+                                    painter = painterResource(id = R.drawable.ic_unpin),
                                     tint = GreenNoteDD,
                                     modifier = Modifier
                                         .size(30.dp)
+                                        .padding(1.dp)
                                         .rotate(-90f)
                                         .clickable(
                                             interactionSource = interactionSource,
@@ -228,5 +228,6 @@ fun NoteItemPin(
 @Preview
 @Composable
 fun ItemPinPreview(){
-    NoteItemPin(note = Note(id = 0, name = "Teste", content = "Content", time = "1:00", isPinned = false), onClick = {}, onLongClick = {}, onShareClick = {}, onUnpinClick = {}, onDeleteClick = {}, expanded = true)
+    NoteItemPin(note = Note(id = 0, name = "Teste", content = "Content", time = "1:00", isPinned = false, color = brushNotePin().toString()), onClick = {}, onLongClick = {}, onShareClick = {}, onUnpinClick = {}, onDeleteClick = {}, expanded = true
+    )
 }

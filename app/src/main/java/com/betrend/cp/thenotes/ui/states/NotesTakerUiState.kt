@@ -5,6 +5,7 @@ data class NotesTakerUiState(
     val content: String = "",
     val time: String = "",
     val isPinned: Boolean = false,
+    val color: String = "amarelo",
     val onNameChange: (String) -> Unit = {},
     val onContentChange: (String) -> Unit = {}
 )

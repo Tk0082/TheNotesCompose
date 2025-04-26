@@ -6,9 +6,10 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "notesdb")
 data class Note(
     @PrimaryKey(autoGenerate = true)
-    val id : Int = 0,
+    val id: Int = 0,
     val name: String,
     val content: String,
     val time: String,
-    val isPinned: Boolean
+    val isPinned: Boolean,
+    var color: String
 )

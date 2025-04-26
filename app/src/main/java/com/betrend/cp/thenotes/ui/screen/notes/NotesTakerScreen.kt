@@ -32,8 +32,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -66,6 +68,7 @@ import com.betrend.cp.thenotes.ui.viewmodel.NotesTakerViewModel
 import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesTakerViewModelFactory
 import com.betrend.cp.thenotes.utils.FontSizeBottomSheet
 import com.betrend.cp.thenotes.utils.FontSizeManager
+import com.betrend.cp.thenotes.utils.NoteSaveDialog
 import com.betrend.cp.thenotes.utils.brushBackButton
 import com.betrend.cp.thenotes.utils.brushBackNote
 import com.betrend.cp.thenotes.utils.brushBorderButton
@@ -95,6 +98,10 @@ fun NotesTakerScreen() {
     val fontSizeManager = remember { FontSizeManager(context) }
     val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    var selectedColor by remember { mutableStateOf(uiState.color.ifEmpty { uiState.color }) }
 
     TheNotesTheme {
         BottomSheetScaffold(
@@ -212,12 +219,13 @@ fun NotesTakerScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         IconButton(
                             onClick = {
                                 scope.launch {
-                                    bottomSheetState.expand()
+                                    bottomSheetState.run { expand() }
                                 }
                             },
                             modifier = Modifier
@@ -288,6 +296,50 @@ fun NotesTakerScreen() {
                                     )
                                 }
                             }
+                        )
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    showDialog = true
+                                }
+                            },
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(50.dp)
+                                .shadow(1.dp, RoundedCornerShape(50.dp), true, GraffitD)
+                                .border(1.dp, brushBorderButton(), RoundedCornerShape(50.dp))
+                                .background(
+                                    brush = brushBackButton(),
+                                    shape = RoundedCornerShape(50.dp)
+                                ),
+                            content = {
+                                Row(
+                                    modifier = Modifier.padding(5.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_tint),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .width(40.dp)
+                                            .height(40.dp)
+                                            .padding(top = 5.dp)
+                                    )
+                                }
+                            }
+                        )
+                        NoteSaveDialog(
+                            showDialog = showDialog,
+                            onDismiss = { showDialog = false },
+                            onColorSelected = { color ->
+                                selectedColor = color
+                            },
+                            onConfirm = {
+                                viewModel.onColorChange(selectedColor) // Atualiza no ViewModel
+                            },
+                            onBrushSelected = {},
+                            initialColor = selectedColor
                         )
                     }
                 }

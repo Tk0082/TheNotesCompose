@@ -41,3 +41,51 @@ val ButtonD = Color(0xFFD9D55B)
 val BorderBtn = Color(0xFFFFF59D)
 
 val BackTxtD = Color(0xFFFFF4C3)
+
+
+val brushNoteYll = Color(0xFFFFFCE3)
+val brushNoteYld = Color(0xFFFFF8B2)
+
+val brushNoteGrl = Color(0xFFECFFEF)
+val brushNoteGrd = Color(0xFFC4FFCB)
+
+val brushNoteRdl = Color(0xFFFFEFEC)
+val brushNoteRdd = Color(0xFFFFCAC1)
+
+val brushNoteBll = Color(0xFFEBF4FF)
+val brushNoteBld = Color(0xFFC1DAFF)
+
+val brushNoteOrl = Color(0xFFFFF5E4)
+val brushNoteOrd = Color(0xFFFFE3B2)
+
+val brushNoteLil = Color(0xFFF7FFE2)
+val brushNoteLid = Color(0xFFEBFFB4)
+
+val brushNoteWnl = Color(0xFFF2ECFF)
+val brushNoteWnd = Color(0xFFDED1FF)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

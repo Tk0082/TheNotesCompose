@@ -30,6 +30,10 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
         _uiState.update { it.copy(content = content) }
     }
 
+    fun onColorChange(color: String) {
+        _uiState.update { it.copy(color = color) }
+    }
+
     fun loadNote(id: Int) {
         viewModelScope.launch {
             currentNoteId = id
@@ -40,7 +44,8 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
                         name = it.name,
                         content = it.content,
                         time = it.time,
-                        isPinned = it.isPinned
+                        isPinned = it.isPinned,
+                        color = it.color
                     )
                 }
                 repository.update(note)
@@ -59,7 +64,8 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
                     name = currentState.name,
                     content = currentState.content,
                     time = time.toString(),
-                    isPinned = currentState.isPinned
+                    isPinned = currentState.isPinned,
+                    color = currentState.color
                 )
             } else {
                 // Senão, criar uma nova nota
@@ -67,7 +73,8 @@ class NotesTakerViewModel(private val repository: NotesRepository): ViewModel() 
                     name = currentState.name,
                     content = currentState.content,
                     time = time.toString(),
-                    isPinned = currentState.isPinned
+                    isPinned = currentState.isPinned,
+                    color = currentState.color
                 )
             }
 

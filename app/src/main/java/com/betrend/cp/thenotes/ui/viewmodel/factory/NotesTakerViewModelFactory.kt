@@ -9,9 +9,7 @@ import com.betrend.cp.thenotes.ui.viewmodel.NotesTakerViewModel
 
 @Suppress("UNCHECKED_CAST")
 @RequiresApi(Build.VERSION_CODES.O)
-class NotesTakerViewModelFactory(
-    private val repository: NotesRepository
-) : ViewModelProvider.Factory {
+class NotesTakerViewModelFactory(private val repository: NotesRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NotesTakerViewModel::class.java)) {
             return NotesTakerViewModel(repository) as T

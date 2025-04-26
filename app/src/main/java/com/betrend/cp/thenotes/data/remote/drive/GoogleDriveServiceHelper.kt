@@ -1,4 +1,4 @@
-package com.betrend.cp.thenotes.data.remote.auth
+package com.betrend.cp.thenotes.data.remote.drive
 
 import android.content.Context
 import android.util.Log
@@ -15,6 +15,7 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.util.Collections
 
 class GoogleDriveServiceHelper(context: Context) {
@@ -81,6 +82,7 @@ class GoogleDriveServiceHelper(context: Context) {
         }
     }
 
+    // Função usada no Upload
     private suspend fun findFileIdByName(driveService: Drive, fileName: String): String? {
         return withContext(Dispatchers.IO) {
             try {
@@ -93,6 +95,63 @@ class GoogleDriveServiceHelper(context: Context) {
                 result.files.firstOrNull()?.id
             } catch (e: Exception) {
                 Log.e("DRIVE_SEARCH", "Erro ao buscar arquivo", e)
+                null
+            }
+        }
+    }
+
+    // Função usada no Download
+    suspend fun findFileByName(account: GoogleSignInAccount, fileName: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val credential = GoogleAccountCredential.usingOAuth2(
+                    context,
+                    listOf(DriveScopes.DRIVE_FILE)
+                )
+                credential.selectedAccount = account.account
+
+                val drive = Drive.Builder(
+                    NetHttpTransport(),
+                    GsonFactory(),
+                    credential
+                ).build()
+
+                val result = drive.files().list()
+                    .setQ("name = '$fileName' and trashed = false")
+                    .setSpaces("drive")
+                    .setFields("files(id, name)")
+                    .execute()
+
+                result.files.firstOrNull()?.id
+            } catch (e: Exception) {
+                Log.e("DRIVE_SEARCH", "Erro ao buscar arquivo", e)
+                null
+            }
+        }
+    }
+
+    suspend fun downloadFile(account: GoogleSignInAccount, fileId: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val credential = GoogleAccountCredential.usingOAuth2(
+                    context,
+                    listOf(DriveScopes.DRIVE_FILE)
+                )
+                credential.selectedAccount = account.account
+
+                val drive = Drive.Builder(
+                    NetHttpTransport(),
+                    GsonFactory(),
+                    credential
+                ).build()
+
+                val outputStream = ByteArrayOutputStream()
+                drive.files().get(fileId)
+                    .executeMediaAndDownloadTo(outputStream)
+
+                String(outputStream.toByteArray())
+            } catch (e: Exception) {
+                Log.e("DRIVE_DOWNLOAD", "Erro ao baixar arquivo", e)
                 null
             }
         }

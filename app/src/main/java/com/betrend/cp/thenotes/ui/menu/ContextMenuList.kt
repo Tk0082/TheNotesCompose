@@ -26,6 +26,7 @@ import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.YellowNoteD
 import com.betrend.cp.thenotes.utils.brushBorderMenu
 import com.betrend.cp.thenotes.utils.brushMenu
+import com.betrend.cp.thenotes.utils.brushYellow
 
 @Composable
 fun ContextMenuList(
@@ -68,5 +69,5 @@ fun ContextMenuItem(text: String, icon: ImageVector, onClick: () -> Unit) {
 @Preview
 @Composable
 fun MenuPreview(){
-    ContextMenuList(note = Note(id = 0, name = "Teste", content = "Content", time = "1:00", isPinned = false), onPin = {}, onShare = {}, onDelete = {}, modifier = Modifier)
+    ContextMenuList(note = Note(id = 0, name = "Teste", content = "Content", time = "1:00", isPinned = false, color = brushYellow().toString()), onPin = {}, onShare = {}, onDelete = {}, modifier = Modifier)
 }

@@ -22,9 +22,15 @@ interface NotesDao {
     @Query("SELECT * FROM notesdb ORDER BY id ASC")
     suspend fun getAllNotes(): List<Note>
 
+    @Query("DELETE FROM notesdb")
+    suspend fun deleteAllNotes()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllNotes(notes: List<Note>)
+
     /* Pegar todas as Notas não Pinadas*/
     @Query("SELECT * FROM notesdb WHERE isPinned == 0 ORDER BY id ASC")
-    fun getAll(): Flow<List<Note>>
+    fun getNotes(): Flow<List<Note>>
 
     @Query("SELECT * FROM notesdb WHERE id = :id")
     suspend fun getNoteById(id: Int): Note?
