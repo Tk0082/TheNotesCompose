@@ -19,7 +19,7 @@ import com.betrend.cp.thenotes.ui.theme.YellowNoteLLL
 
 @Composable
 fun brushBackButton(): Brush{
-    val backBtn = listOf(ButtonL, ButtonD)
+    val backBtn = listOf(YellowNoteLL, YellowNote)
     val brushbackbutton = Brush.verticalGradient(backBtn)
     return brushbackbutton
 }
@@ -62,6 +62,13 @@ fun brushMenu(): Brush {
 @Composable
 fun brushBorderMenu(): Brush{
     val backNote = listOf(YellowNoteL, YellowNote)
+    val brushborderbutton = Brush.verticalGradient(backNote)
+    return brushborderbutton
+}
+
+@Composable
+fun brushPanel(): Brush{
+    val backNote = listOf(YellowNoteLLL, YellowNote)
     val brushborderbutton = Brush.verticalGradient(backNote)
     return brushborderbutton
 }

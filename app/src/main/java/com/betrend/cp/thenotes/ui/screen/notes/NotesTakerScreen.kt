@@ -90,7 +90,7 @@ fun NotesTakerScreen() {
     val scope = rememberCoroutineScope()
     rememberScaffoldState()
 
-    val fontSizeManager = remember { FontSizeManager() }
+    val fontSizeManager = remember { FontSizeManager(context) }
     val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 

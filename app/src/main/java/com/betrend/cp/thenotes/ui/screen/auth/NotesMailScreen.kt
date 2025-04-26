@@ -1,4 +1,4 @@
-package com.betrend.cp.thenotes.ui.screen
+package com.betrend.cp.thenotes.ui.screen.auth
 
 import android.annotation.SuppressLint
 import android.content.Intent
