@@ -28,6 +28,7 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -63,7 +64,6 @@ import com.betrend.cp.thenotes.ui.theme.GraffitLL
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
 import com.betrend.cp.thenotes.ui.theme.YellowNote
 import com.betrend.cp.thenotes.ui.theme.YellowNoteD
-import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.ui.viewmodel.NotesTakerViewModel
 import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesTakerViewModelFactory
 import com.betrend.cp.thenotes.utils.FontSizeBottomSheet
@@ -116,18 +116,17 @@ fun NotesTakerScreen() {
             sheetPeekHeight = 0.dp,
             modifier = Modifier
                 .fillMaxSize()
-                .background(YellowNoteLL)
+                .background(MaterialTheme.colorScheme.surface)
         ) { padding ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(YellowNoteLL)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(padding)
                     .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 3.dp)
             ) {
                 Column(
-                    modifier = Modifier.background(YellowNoteLL),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

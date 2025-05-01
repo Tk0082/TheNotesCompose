@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.betrend.cp.thenotes.data.local.entities.Note
 import com.betrend.cp.thenotes.ui.theme.Graffit
 import com.betrend.cp.thenotes.ui.theme.GraffitD
+import com.betrend.cp.thenotes.ui.theme.Transparent
 import com.betrend.cp.thenotes.utils.brushYellow
 import com.betrend.cp.thenotes.utils.textScrool
 
@@ -45,11 +47,12 @@ fun NoteItem(
         Modifier
             .fillMaxWidth()
             .padding(2.dp)
+            .background(Transparent)
     ) {
         Row(
             modifier = Modifier
                 .padding(2.dp)
-                .shadow(2.dp, RoundedCornerShape(15.dp))
+                .shadow(2.dp, RoundedCornerShape(15.dp), true, MaterialTheme.colorScheme.onSurfaceVariant)
                 .background(brush, RoundedCornerShape(15.dp))
         ){
             Column(

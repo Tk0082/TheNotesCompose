@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -52,6 +53,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
             .verticalScroll(scroolState)
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
@@ -74,7 +76,7 @@ fun LoginScreen(
         )
         Text(
             text = "Conecte-se à sua conta do Google para fazer upload de suas notas no Drive, e resgate em qualquer aparelho.",
-            color = GraffitL,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 48.dp)

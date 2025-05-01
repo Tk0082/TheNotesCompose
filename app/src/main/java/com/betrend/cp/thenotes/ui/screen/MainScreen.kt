@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,12 +72,12 @@ fun MainScreen(){
                     selectedIndex = selectedIndex,
                     modifier = Modifier
                         .height(50.dp)
-                        .background(YellowNoteLL),
+                        .background(MaterialTheme.colorScheme.surface),
                     cornerRadius = shapeCornerRadius(topRight = 34.dp, topLeft = 34.dp, bottomRight = 0.dp, bottomLeft = 0.dp),
                     ballAnimation = Parabolic(tween(200)),
                     indentAnimation = Height(tween(180)),
-                    barColor = YellowNoteD,
-                    ballColor = YellowNoteD
+                    barColor = MaterialTheme.colorScheme.secondary,
+                    ballColor = MaterialTheme.colorScheme.secondary
                 ) {
                     navigationBarItems.forEach { item ->
                         Box(
@@ -94,9 +95,9 @@ fun MainScreen(){
                                     imageVector = item.icon,
                                     contentDescription = item.description,
                                     tint = if (selectedIndex == item.ordinal) {
-                                        YellowNoteL
+                                        MaterialTheme.colorScheme.tertiary
                                     } else {
-                                        YellowNoteDD
+                                        MaterialTheme.colorScheme.onPrimary
                                     }
                                 )
                             }

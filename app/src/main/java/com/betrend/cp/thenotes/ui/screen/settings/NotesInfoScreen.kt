@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +48,6 @@ import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.TheNotesTheme
 import com.betrend.cp.thenotes.ui.theme.Transparent
 import com.betrend.cp.thenotes.ui.theme.YellowNote
-import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.utils.brushBackButton
 import com.betrend.cp.thenotes.utils.brushBorderButton
 import com.betrend.cp.thenotes.utils.brushPanel
@@ -62,7 +62,7 @@ fun NotesInfoScreen(){
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .background(YellowNoteLL)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(10.dp)
         ) {
             val scrollState = rememberScrollState()
@@ -70,19 +70,18 @@ fun NotesInfoScreen(){
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
-                    .background(YellowNoteLL)
                     .padding(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     stringResource(R.string.app_name),
                     textAlign = TextAlign.Center,
-                    color = GraffitD,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = TextStyle(
                         fontSize = 45.sp,
                         fontWeight = FontWeight.Bold,
                         shadow = Shadow(
-                            GraffitL,
+                            MaterialTheme.colorScheme.onSurfaceVariant,
                             offset = Offset.VisibilityThreshold,
                             blurRadius = 15f
                         )

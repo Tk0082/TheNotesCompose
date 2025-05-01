@@ -3,7 +3,6 @@ package com.betrend.cp.thenotes.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -11,20 +10,24 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GraffitD,
-    secondary = Graffit,
+    primary = Graffit,
+    onPrimary = GraffitDD,
+    secondary = GraffitD,
+    onSecondary = GraffitL,
     tertiary = GraffitL,
-    background = Graffit,
-    onBackground = GraffitDD,
-    onPrimary = GraffitL,
-    onSecondary = GraffitLL
+    onTertiary = Graffit,
+    background = GraffitL,
+    onBackground = YellowNoteLL,
+    surface = GraffitL,
+    onSurface = YellowNote,
+    surfaceVariant = GraffitDD,
+    onSurfaceVariant = YellowNoteL,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -32,15 +35,16 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = YellowNoteDD,
     onPrimaryContainer = YellowNoteD,
     secondary = YellowNoteD,
-    tertiary = YellowNoteL,
-    background = YellowNoteLL,
-    onBackground = YellowNoteD,
-    surface = YellowNoteLL,
-    surfaceVariant = YellowNoteDD,
-    onSurface = YellowNoteD,
-    onSurfaceVariant = YellowNoteLL,
     onSecondary = YellowNoteL,
-    onErrorContainer = NoteError
+    tertiary = YellowNoteL,
+    onTertiary = Graffit,
+    background = YellowNoteLL,
+    onBackground = GraffitD,
+    surface = YellowNoteLL,
+    onSurface = Graffit,
+    surfaceVariant = YellowNoteDD,
+    onSurfaceVariant = GraffitL,
+    onErrorContainer = NoteError,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -62,14 +66,11 @@ fun TheNotesTheme(
     content: @Composable () -> Unit
 ) {
     val view = LocalView.current
-    if (!view.isInEditMode){
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = LightColorScheme.secondary.toArgb()
-            WindowCompat
-                .getInsetsController(window, view)
-                .isAppearanceLightStatusBars = LightColorScheme.primary.isSpecified
-        }
+
+    val colors = if (!darkTheme) {
+        LightColorScheme
+    } else {
+        DarkColorScheme
     }
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -81,8 +82,19 @@ fun TheNotesTheme(
         else -> LightColorScheme
     }
 
+    if (!view.isInEditMode){
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colors.secondary.toArgb()
+            window.navigationBarColor = colors.secondary.toArgb()
+            WindowCompat
+                .getInsetsController(window, view)
+                .isAppearanceLightStatusBars = darkTheme
+        }
+    }
+
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colors,
         typography = Typography,
         content = content
     )

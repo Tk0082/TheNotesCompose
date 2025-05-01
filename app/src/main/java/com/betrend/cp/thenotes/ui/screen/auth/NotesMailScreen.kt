@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -116,13 +117,12 @@ fun NotesMailScreen(){
         Scaffold (
             modifier = Modifier
                 .fillMaxSize()
-                .background(YellowNoteLL)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(10.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(YellowNoteLL)
             ) {
                 IconButton(
                     modifier = Modifier.align(Alignment.End),

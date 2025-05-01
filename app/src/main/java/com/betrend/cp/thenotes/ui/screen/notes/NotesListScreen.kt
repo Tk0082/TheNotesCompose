@@ -11,17 +11,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
@@ -39,8 +42,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +55,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
@@ -61,6 +66,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,13 +79,11 @@ import com.betrend.cp.thenotes.data.local.repository.NotesRepository
 import com.betrend.cp.thenotes.ui.components.notes.NoteItem
 import com.betrend.cp.thenotes.ui.components.notes.NoteItemPin
 import com.betrend.cp.thenotes.ui.theme.Graffit
-import com.betrend.cp.thenotes.ui.theme.GraffitL
 import com.betrend.cp.thenotes.ui.theme.NoteError
 import com.betrend.cp.thenotes.ui.theme.NoteItemError
-import com.betrend.cp.thenotes.ui.theme.YellowNote
+import com.betrend.cp.thenotes.ui.theme.Transparent
 import com.betrend.cp.thenotes.ui.theme.YellowNoteDD
 import com.betrend.cp.thenotes.ui.theme.YellowNoteL
-import com.betrend.cp.thenotes.ui.theme.YellowNoteLL
 import com.betrend.cp.thenotes.ui.viewmodel.NotesListViewModel
 import com.betrend.cp.thenotes.ui.viewmodel.factory.NotesListViewModelFactory
 import com.betrend.cp.thenotes.utils.ConfirmDeleteDialog
@@ -118,6 +122,8 @@ fun NotesListScreen() {
     val notes by viewModel.notes.collectAsState()
     val notesPin by viewModel.pinnedNotes.collectAsState()
 
+    val npin = notesPin.size
+
     // Estado do Dialog de remoção de notas
     val showDialogId = remember { mutableStateOf<String?>(null) }
 
@@ -146,12 +152,12 @@ fun NotesListScreen() {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(YellowNoteLL),
+            .background(MaterialTheme.colorScheme.background),
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier
                     .border(1.dp, brushBorderButton(), RoundedCornerShape(20.dp)),
-                containerColor = YellowNote,
+                containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = 3.dp,
                     pressedElevation = 10.dp
@@ -167,7 +173,7 @@ fun NotesListScreen() {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "Criar Nota",
-                        tint = YellowNoteDD
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             )
@@ -176,40 +182,43 @@ fun NotesListScreen() {
             Column (
                 Modifier
                     .fillMaxSize()
-                    .background(YellowNoteLL),
+                    .height(50.dp)
+                    .background(MaterialTheme.colorScheme.surface),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 15.dp, top = 10.dp),
+                        .padding(start = 10.dp, end = 10.dp, top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Image(
                         painter = painterResource(id = mipmap.thenotes),
                         contentDescription = null,
                         modifier = Modifier
-                            .width(34.dp)
+                            .size(34.dp)
+                            .align(Alignment.CenterVertically)
                     )
                     Text(
                         text = stringResource(id = string.app_name),
-                        color = Graffit,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            shadow = Shadow(GraffitL, offset = Offset.VisibilityThreshold, blurRadius = 5f)
+                            shadow = Shadow(MaterialTheme.colorScheme.onSurfaceVariant, offset = Offset.VisibilityThreshold, blurRadius = 5f)
                         ),
                         modifier = Modifier
-                            .padding(start = 10.dp, top = 8.dp)
-                            .weight(1f, true)
+                            .padding(5.dp)
+                            .align(Alignment.CenterVertically)
                     )
-                }
-                SearchBar(
-                    modifier = Modifier
-                        .padding(horizontal = 5.dp)
-                        .fillMaxWidth(),
-                    inputField = {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f, true)
+                            .shadow(
+                                3.dp, RoundedCornerShape(50.dp),
+                                true, MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                    ) {
                         SearchBarDefaults.InputField(
                             query = txSearch.value,
                             onQueryChange = { newQuery ->
@@ -220,9 +229,20 @@ fun NotesListScreen() {
                                 focusManager.clearFocus(true)
                             },
                             expanded = false,
-                            onExpandedChange = {  },
-                            placeholder = { Text("Buscar Notas...", fontSize = 16.sp) },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            onExpandedChange = { },
+                            placeholder = {
+                                Text(
+                                    "Buscar Notas...",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onTertiary
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = null
+                                )
+                            },
                             trailingIcon = {
                                 if (txSearch.value > 0.toString()) {
                                     Icon(
@@ -235,92 +255,134 @@ fun NotesListScreen() {
                                     )
                                 }
                             },
+                            colors = SearchBarDefaults.inputFieldColors(
+                                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface,
+                                focusedTextColor = MaterialTheme.colorScheme.onTertiary,
+                                cursorColor = MaterialTheme.colorScheme.tertiary,
+                                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onTertiary,
+                                focusedTrailingIconColor = MaterialTheme.colorScheme.onTertiary,
+                                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onTertiary,
+                                disabledTextColor = MaterialTheme.colorScheme.onTertiary,
+                            ),
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .background(
                                     brush = brushBackNote(),
                                     shape = RoundedCornerShape(50.dp)
                                 )
+                                .height(50.dp)
                                 .border(.5.dp, brushBorderNote(), RoundedCornerShape(50.dp))
                                 .onFocusChanged { focusState ->
                                     if (focusState.isFocused) {
                                         focusState.hasFocus
-                                    }else{
+                                    } else {
                                         // Oculta o teclado quando perder o foco
                                         focusManager.clearFocus(true)
                                     }
                                 }
                         )
-                    },
-                    expanded = false,
-                    onExpandedChange = {},
-                    tonalElevation = 3.dp, content = {}
-                )
+                    }
+                }
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 } else if (uiState.error != null) {
                     Text(text = uiState.error.toString(), color = NoteError, modifier = Modifier.padding(16.dp))
                 } else {
-                    // Lista de Notas pinadas
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        items(notesPin) { note ->
-                            val isExpanded = focusedNoteId.value == note.id.toString()
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        // Lista de Notas pinadas
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 5.dp, end = 5.dp, top = 2.dp, bottom = 2.dp),
+                            flingBehavior = ScrollableDefaults.flingBehavior()
+                        ) {
+                            items(notesPin) { note ->
+                                val isExpanded = focusedNoteId.value == note.id.toString()
 
-                            // Fechar botões depois de 3s
-                            LaunchedEffect(isExpanded) {
-                                if(isExpanded){
-                                    delay(3000)
-                                    focusedNoteId.value = null
+                                // Fechar botões depois de 3s
+                                LaunchedEffect(isExpanded) {
+                                    if (isExpanded) {
+                                        delay(3000)
+                                        focusedNoteId.value = null
+                                    }
+                                }
+                                NoteItemPin(
+                                    note = note,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        // Evento de clicar na nota para editar
+                                        Intent(context, NotesTakerActivity::class.java).also {
+                                            it.putExtra("noteId", note.id)
+                                            context.startActivity(it)
+                                        }
+                                    },
+                                    onLongClick = {
+                                        // Expande ou contrai a nota clicada
+                                        focusedNoteId.value =
+                                            if (focusedNoteId.value == note.id.toString()) null else note.id.toString()
+                                    },
+                                    onDeleteClick = {
+                                        // Chamar o Dialog de Remoção
+                                        showDialogId.value = note.id.toString()
+                                        focusedNoteId.value = null
+                                    },
+                                    onUnpinClick = {
+                                        viewModel.pinNote(note)
+                                        focusedNoteId.value = null
+                                    },
+                                    onShareClick = {
+                                        shareText(context, note.name, note.content)
+                                        focusedNoteId.value = null
+                                    },
+                                    expanded = isExpanded
+                                )
+                                // Chama o Dialog
+                                if (showDialogId.value == note.id.toString()) {
+                                    ConfirmDeleteDialog(
+                                        note = note,
+                                        onDismiss = { showDialogId.value = null },
+                                        onConfirm = {
+                                            viewModel.removeNote(note)
+                                            showDialogId.value = null
+                                        }
+                                    )
                                 }
                             }
-                            NoteItemPin(
-                                note = note,
-                                modifier = Modifier.fillMaxWidth(),
-                                onClick = {
-                                    // Evento de clicar na nota para editar
-                                    Intent(context, NotesTakerActivity::class.java).also {
-                                        it.putExtra("noteId", note.id)
-                                        context.startActivity(it)
-                                    }
-                                },
-                                onLongClick = {
-                                    // Expande ou contrai a nota clicada
-                                    focusedNoteId.value = if (focusedNoteId.value == note.id.toString()) null else note.id.toString()
-                                },
-                                onDeleteClick = {
-                                    // Chamar o Dialog de Remoção
-                                    showDialogId.value = note.id.toString()
-                                    focusedNoteId.value = null
-                                },
-                                onUnpinClick = {
-                                    viewModel.pinNote(note)
-                                    focusedNoteId.value = null
-                                },
-                                onShareClick = {
-                                    shareText(context, note.name, note.content)
-                                    focusedNoteId.value = null
-                                },
-                                expanded = isExpanded
-                            )
-                            // Chama o Dialog
-                            if (showDialogId.value == note.id.toString()) {
-                                ConfirmDeleteDialog(
-                                    note = note,
-                                    onDismiss = { showDialogId.value = null },
-                                    onConfirm = {
-                                        viewModel.removeNote(note)
-                                        showDialogId.value = null
-                                    }
-                                )
+                        }
+                        if (notesPin.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .alpha(.8f)
+                                    .padding(2.dp)
+                                    .align(Alignment.BottomStart)
+                                    .shadow(3.dp, CircleShape, true, Graffit)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .align(Alignment.Center)
+                                        .background(NoteError, CircleShape)
+                                        .border(1.dp, NoteItemError, CircleShape)
+                                ) {
+                                    Text(
+                                        text = npin.toString(),
+                                        modifier = Modifier.align(Alignment.Center),
+                                        textAlign = TextAlign.Center,
+                                        style = TextStyle(
+                                            color = Graffit,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
                     // Lista de Notas gerais
                     LazyColumn(
-                        Modifier
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.background)
                             .padding(horizontal = 5.dp)
                             .weight(1f, true)
                     ) {
@@ -364,7 +426,7 @@ fun NotesListScreen() {
                                         when(dismissState.targetValue){
                                             DismissValue.DismissedToStart ->NoteError
                                             DismissValue.DismissedToEnd -> YellowNoteL
-                                            else -> YellowNoteLL
+                                            else -> Transparent
                                         },
                                         label = ""
                                     )

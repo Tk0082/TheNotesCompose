@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +46,6 @@ import com.betrend.cp.thenotes.ui.theme.GraffitLLL
 import com.betrend.cp.thenotes.ui.theme.Transparent
 import com.betrend.cp.thenotes.ui.theme.White
 import com.betrend.cp.thenotes.ui.theme.YellowNote
-import com.betrend.cp.thenotes.ui.theme.YellowNoteDDD
 import com.betrend.cp.thenotes.utils.brushBackButton
 import com.betrend.cp.thenotes.utils.brushBorderButton
 
@@ -60,6 +60,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
             .verticalScroll(scrollState)
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
@@ -112,7 +113,7 @@ fun ProfileScreen(
         // Email
         Text(
             text = user.email,
-            color = GraffitL,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 16.sp,
             modifier = Modifier.padding(top = 8.dp)
         )
@@ -198,9 +199,9 @@ fun ProfileScreen(
         // Botão de logout
         Text(
             text = "Sair",
-            color = YellowNoteDDD,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onLogout() }
         )
     }
